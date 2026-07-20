@@ -28,13 +28,13 @@ canvas#particles {
 
 .container {
   text-align: center;
-  padding: 48px 64px 36px;
+  padding: 40px 36px 32px;
   position: relative;
   z-index: 1;
   background: rgba(255,255,255,.04);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: 48px;
+  border-radius: 36px;
   border: 1px solid rgba(255,255,255,.08);
   box-shadow:
     0 40px 100px rgba(0,0,0,.5),
@@ -42,7 +42,8 @@ canvas#particles {
     0 0 100px rgba(180,60,200,.05);
   transform: rotateX(1deg);
   transition: transform .8s cubic-bezier(.23,1,.32,1);
-  max-width: 92vw;
+  width: 90vw;
+  max-width: 440px;
 }
 .container:hover { transform: rotateX(0); }
 
@@ -60,34 +61,35 @@ canvas#particles {
 }
 
 .top-bar {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+  height: 20px;
   margin-bottom: 16px;
   position: relative;
   z-index: 1;
+  font-size: 11px;
+  color: rgba(255,255,255,.15);
+  letter-spacing: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
 }
-.top-bar span {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  opacity: .3;
-}
-.top-bar span:nth-child(1) { background: #ff6b8a; }
-.top-bar span:nth-child(2) { background: #ffb347; }
-.top-bar span:nth-child(3) { background: #7bed9f; }
 
 .count-wrap {
   position: relative;
   z-index: 1;
-  margin: 0 0 8px;
+  margin: 0 auto 8px;
+  width: 100%;
+  overflow: hidden;
 }
 .count {
   font-size: clamp(100px, 22vw, 200px);
   font-weight: 900;
   line-height: 1;
-  display: inline-block;
   position: relative;
   font-variant-numeric: tabular-nums;
+  text-align: center;
+  display: block;
+  width: 100%;
   background: linear-gradient(180deg, #ffffff 0%, #ffb3c1 45%, #ff6b8a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -144,7 +146,7 @@ canvas#particles {
   letter-spacing: 6px;
   cursor: pointer;
   position: relative;
-  background: radial-gradient(circle at 36% 28%, #ff7a9a, #c4123a 65%, #6e0a20);
+  background: radial-gradient(circle at 36% 28%, #ffcc99, #d4a574 45%, #8b6c4a);
   box-shadow:
     0 0 0 2px rgba(255,255,255,.06),
     0 8px 32px rgba(255,65,108,.35),
@@ -155,7 +157,7 @@ canvas#particles {
   color: transparent;
 }
 .btn-main::before {
-  content: '滚';
+  content: '👊';
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -164,13 +166,14 @@ canvas#particles {
   text-indent: 6px;
   color: rgba(255,255,255,.92);
   text-shadow: 0 2px 8px rgba(0,0,0,.3);
+  font-size: 52px;
 }
 .btn-main::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.25), transparent 50%);
+  background: radial-gradient(circle at 30% 20%, rgba(255,220,180,.3), transparent 55%);
   pointer-events: none;
 }
 .btn-main:hover {
@@ -208,6 +211,205 @@ canvas#particles {
   50% { transform: translate(-50%, -50%) scale(1.12); opacity: .04; }
 }
 
+/* 出拳动画 - 四个方向 */
+.btn-main.punch-right {
+  animation: punchRight .35s cubic-bezier(.34,1.56,.64,1);
+}
+.btn-main.punch-left {
+  animation: punchLeft .35s cubic-bezier(.34,1.56,.64,1);
+}
+.btn-main.punch-up {
+  animation: punchUp .35s cubic-bezier(.34,1.56,.64,1);
+}
+.btn-main.punch-down {
+  animation: punchDown .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes punchRight {
+  0% { transform: translateX(0) scale(1); }
+  30% { transform: translateX(60px) scale(1.15) rotate(10deg); }
+  55% { transform: translateX(60px) scale(.95) rotate(5deg); }
+  80% { transform: translateX(20px) scale(1.05); }
+  100% { transform: translateX(0) scale(1); }
+}
+@keyframes punchLeft {
+  0% { transform: translateX(0) scale(1); }
+  30% { transform: translateX(-60px) scale(1.15) rotate(-10deg); }
+  55% { transform: translateX(-60px) scale(.95) rotate(-5deg); }
+  80% { transform: translateX(-20px) scale(1.05); }
+  100% { transform: translateX(0) scale(1); }
+}
+@keyframes punchUp {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-60px) scale(1.15) rotate(-10deg); }
+  55% { transform: translateY(-60px) scale(.95) rotate(-5deg); }
+  80% { transform: translateY(-20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes punchDown {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(60px) scale(1.15) rotate(10deg); }
+  55% { transform: translateY(60px) scale(.95) rotate(5deg); }
+  80% { transform: translateY(20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* 张永建挨揍脸 */
+.face-hit {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: 80px;
+  animation: faceHitAnim 1.2s ease-out forwards;
+}
+@keyframes faceHitAnim {
+  0% { transform: scale(.1) translate(0,0) rotate(0); opacity: 0; }
+  15% { transform: scale(1.3) translate(calc(var(--fx)*.15),calc(var(--fy)*.15)) rotate(-5deg); opacity: 1; }
+  40% { transform: scale(.9) translate(calc(var(--fx)*.4),calc(var(--fy)*.4)) rotate(5deg); opacity: .9; }
+  70% { transform: scale(1.1) translate(calc(var(--fx)*.7),calc(var(--fy)*.7)) rotate(-8deg); opacity: .6; }
+  100% { transform: scale(.2) translate(calc(var(--fx)),calc(var(--fy))) rotate(20deg); opacity: 0; }
+}
+
+/* 额外飞出的表情 */
+.face-fly {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  font-size: 36px;
+  animation: faceFlyAnim .9s ease-out forwards;
+}
+@keyframes faceFlyAnim {
+  0% { transform: translate(0,0) scale(.2) rotate(0); opacity: 0; }
+  20% { transform: translate(20px,-30px) scale(1.2) rotate(40deg); opacity: 1; }
+  100% { transform: translate(80px,-120px) scale(.3) rotate(180deg); opacity: 0; }
+}
+
+/* 星星/冲击波 */
+.hit-star {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  font-size: 24px;
+  animation: hitStarAnim 1.1s ease-out forwards;
+}
+@keyframes hitStarAnim {
+  0% { transform: translate(0,0) scale(0) rotate(0); opacity: 1; }
+  50% { transform: translate(var(--dx),var(--dy)) scale(1.3) rotate(180deg); opacity: 1; }
+  100% { transform: translate(var(--dx2),var(--dy2)) scale(.2) rotate(360deg); opacity: 0; }
+}
+
+/* 拳风文字飞出 - 多种轨迹 */
+.punch-word {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.punch-word.straight {
+  animation: punchStraight 1.2s ease-out forwards;
+}
+.punch-word.up {
+  animation: punchUp 1.4s ease-out forwards;
+}
+.punch-word.spin {
+  animation: punchSpin 1.3s ease-out forwards;
+  animation-delay: .2s;
+}
+.punch-word.bounce {
+  animation: punchBounce 1.5s ease-out forwards;
+}
+.punch-word.zigzag {
+  animation: punchZigzag 1.4s ease-out forwards;
+}
+.punch-word.shatter {
+  animation: punchShatter 1.2s ease-out forwards;
+}
+.punch-word.swoop {
+  animation: punchSwoop 1.3s ease-out forwards;
+}
+.punch-word.wobble {
+  animation: punchWobble 1.4s ease-out forwards;
+}
+.punch-word.spiral {
+  animation: punchSpiral 1.5s ease-out forwards;
+  animation-delay: .2s;
+}
+@keyframes punchStraight {
+  0% { transform: translate(0,0) scale(.2) rotate(0); opacity: 0; }
+  20% { transform: translate(var(--wx),var(--wy)) scale(1.1) rotate(5deg); opacity: 1; }
+  100% { transform: translate(var(--wx2),var(--wy2)) scale(.3) rotate(30deg); opacity: 0; }
+}
+@keyframes punchUp {
+  0% { transform: translate(0,0) scale(.3); opacity: 0; }
+  20% { transform: translate(-10px,-30px) scale(1.2); opacity: 1; }
+  60% { transform: translate(10px,-90px) scale(1); opacity: .8; }
+  100% { transform: translate(-5px,-130px) scale(.2); opacity: 0; }
+}
+@keyframes punchSpin {
+  0% { transform: translate(0,0) scale(.2) rotate(0); opacity: 0; }
+  30% { transform: translate(var(--wx),var(--wy)) scale(1.3) rotate(180deg); opacity: 1; }
+  100% { transform: translate(var(--wx2),var(--wy2)) scale(.2) rotate(720deg); opacity: 0; }
+}
+@keyframes punchBounce {
+  0% { transform: translate(0,0) scale(.2) rotate(-20deg); opacity: 0; }
+  25% { transform: translate(10px,-40px) scale(1.2) rotate(10deg); opacity: 1; }
+  50% { transform: translate(-15px,-20px) scale(1) rotate(-5deg); opacity: .9; }
+  75% { transform: translate(20px,-50px) scale(.8) rotate(15deg); opacity: .6; }
+  100% { transform: translate(-10px,-80px) scale(.2) rotate(30deg); opacity: 0; }
+}
+@keyframes punchZigzag {
+  0% { transform: translate(0,0) scale(.1); opacity: 0; }
+  20% { transform: translate(var(--wx),var(--wy)) scale(1.2) rotate(10deg); opacity: 1; }
+  45% { transform: translate(calc(var(--wx2)*.5),calc(var(--wy)*1.3)) scale(1) rotate(-15deg); opacity: .9; }
+  70% { transform: translate(var(--wx2),calc(var(--wy)*.6)) scale(.8) rotate(20deg); opacity: .5; }
+  100% { transform: translate(calc(var(--wx2)*1.3),var(--wy2)) scale(.2) rotate(-30deg); opacity: 0; }
+}
+@keyframes punchShatter {
+  0% { transform: translate(0,0) scale(1) rotate(0); opacity: 0; }
+  10% { transform: translate(0,0) scale(1.3) rotate(0); opacity: 1; }
+  30% { transform: translate(var(--wx),var(--wy)) scale(1.1) rotate(15deg); opacity: .9; }
+  60% { transform: translate(calc(var(--wx)*1.5),calc(var(--wy)*1.5)) scale(.6) rotate(45deg); opacity: .5; }
+  100% { transform: translate(var(--wx2),var(--wy2)) scale(.1) rotate(90deg); opacity: 0; }
+}
+@keyframes punchSwoop {
+  0% { transform: translate(0,0) scale(.2); opacity: 0; }
+  30% { transform: translate(40px,-50px) scale(1.3) rotate(-15deg); opacity: 1; }
+  60% { transform: translate(-20px,-20px) scale(1) rotate(5deg); opacity: .8; }
+  100% { transform: translate(var(--wx2),var(--wy2)) scale(.2) rotate(20deg); opacity: 0; }
+}
+@keyframes punchWobble {
+  0% { transform: translate(0,0) scale(.2); opacity: 0; }
+  25% { transform: translate(var(--wx),var(--wy)) scale(1.2) rotate(-25deg); opacity: 1; }
+  50% { transform: translate(calc(var(--wx)*1.2),calc(var(--wy)*.6)) scale(1) rotate(20deg); opacity: .9; }
+  75% { transform: translate(calc(var(--wx)*.5),calc(var(--wy)*1.4)) scale(.7) rotate(-15deg); opacity: .5; }
+  100% { transform: translate(var(--wx2),var(--wy2)) scale(.2) rotate(10deg); opacity: 0; }
+}
+@keyframes punchSpiral {
+  0% { transform: translate(0,0) scale(.1) rotate(0); opacity: 0; }
+  25% { transform: translate(30px,-40px) scale(1.1) rotate(180deg); opacity: 1; }
+  50% { transform: translate(-20px,-80px) scale(.9) rotate(360deg); opacity: .8; }
+  75% { transform: translate(20px,-110px) scale(.6) rotate(540deg); opacity: .4; }
+  100% { transform: translate(0,-140px) scale(.2) rotate(720deg); opacity: 0; }
+}
+
+/* 揍人题字 */
+.punch-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: clamp(20px, 4vw, 36px);
+  font-weight: 900;
+  white-space: nowrap;
+  letter-spacing: 4px;
+  animation: punchLabelAnim 1.1s ease-out forwards;
+}
+@keyframes punchLabelAnim {
+  0% { transform: translateY(0) scale(.5) rotate(-10deg); opacity: 0; }
+  30% { transform: translateY(-20px) scale(1.1) rotate(3deg); opacity: 1; }
+  100% { transform: translateY(-60px) scale(.8) rotate(5deg); opacity: 0; }
+}
+
 .btn-shadow {
   width: 100px; height: 14px;
   margin: -4px auto 0;
@@ -234,7 +436,7 @@ canvas#particles {
 
 .text-card {
   margin-top: 22px;
-  height: 82px;
+  min-height: 110px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -250,7 +452,8 @@ canvas#particles {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
+  padding: 8px;
 }
 
 .placeholder-line {
@@ -265,6 +468,10 @@ canvas#particles {
 .phrase-line {
   opacity: 0;
   will-change: transform, opacity;
+  width: 100%;
+  text-align: center;
+  word-break: break-word;
+  padding: 0 8px;
 }
 
 .phrase-line.angry {
@@ -276,9 +483,9 @@ canvas#particles {
 }
 
 .phrase-line.calm {
-  font-size: clamp(16px, 2.4vw, 20px);
+  font-size: clamp(15px, 2.6vw, 20px);
   font-weight: 500;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   background: linear-gradient(135deg, #7bed9f, #70a1ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -286,37 +493,36 @@ canvas#particles {
 }
 
 .phrase-line.angry-in {
-  animation: angryIn .55s cubic-bezier(.34,1.56,.64,1) forwards;
+  animation: angryIn .4s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 @keyframes angryIn {
-  0% { opacity: 0; transform: scale(.2) translateY(30px) rotate(-8deg) translateX(-20px); filter: blur(12px); }
-  45% { opacity: 1; transform: scale(1.12) translateY(-4px) rotate(1deg) translateX(2px); filter: blur(0); }
-  100% { opacity: 1; transform: scale(1) translateY(0) rotate(0) translateX(0); filter: blur(0); }
+  0% { opacity: 0; transform: scale(.3) translateY(20px); filter: blur(8px); }
+  60% { opacity: 1; transform: scale(1.05) translateY(-2px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
 .phrase-line.angry-out {
-  animation: angryOut .4s cubic-bezier(.6,-.28,.74,.05) forwards;
+  animation: angryOut .3s ease-in forwards;
 }
 @keyframes angryOut {
-  0% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-  100% { opacity: 0; transform: scale(1.4) translateY(-24px) rotate(4deg); filter: blur(8px); }
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(1.15) translateY(-16px); }
 }
 
 .phrase-line.calm-in {
-  animation: calmIn .8s cubic-bezier(.23,1,.32,1) forwards;
+  animation: calmIn .5s cubic-bezier(.23,1,.32,1) forwards;
 }
 @keyframes calmIn {
-  0% { opacity: 0; transform: translateY(16px) scale(.92); filter: blur(6px); }
-  60% { opacity: 1; transform: translateY(-2px) scale(1.01); filter: blur(0); }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .phrase-line.calm-out {
-  animation: calmOut .6s ease-in forwards;
+  animation: calmOut .35s ease-in forwards;
 }
 @keyframes calmOut {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-12px) scale(.88); }
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
 
 .divider-line {
@@ -387,10 +593,30 @@ canvas#particles {
 }
 
 @media (max-width: 520px) {
-  .container { padding: 32px 28px 28px; border-radius: 32px; }
-  .btn-main { width: 110px; height: 110px; }
-  .btn-main::before { line-height: 110px; }
-  .daily-remain { font-size: 10px; }
+  .container { padding: 24px 20px 20px; border-radius: 28px; width: 94vw; max-width: 94vw; }
+  .btn-main { width: 100px; height: 100px; }
+  .btn-main::before { line-height: 100px; font-size: 42px; }
+  .label { font-size: 10px; letter-spacing: 8px; margin-bottom: 20px; }
+  .top-bar { font-size: 9px; height: 16px; margin-bottom: 12px; }
+  .daily-remain { font-size: 9px; margin-top: 14px; }
+  .text-card { min-height: 90px; }
+  .phrase-line.angry { font-size: clamp(16px, 4vw, 20px); }
+  .phrase-line.calm { font-size: clamp(13px, 3.5vw, 16px); }
+  .realtime-info { font-size: 8px; }
+  .face-hit { font-size: 50px !important; }
+  .punch-label { font-size: clamp(16px, 4vw, 24px) !important; }
+  .glow-ring { display: none; }
+  .btn-shadow { width: 70px; }
+  .count-wrap { margin: 0 auto 4px; }
+}
+
+@media (max-width: 380px) {
+  .container { padding: 16px 14px 16px; border-radius: 20px; width: 96vw; max-width: 96vw; }
+  .btn-main { width: 80px; height: 80px; }
+  .btn-main::before { line-height: 80px; font-size: 36px; }
+  .label { letter-spacing: 4px; font-size: 9px; }
+  .text-card { min-height: 76px; }
+  .count { font-size: clamp(56px, 16vw, 80px); }
 }
 </style>
 </head>
@@ -400,18 +626,16 @@ canvas#particles {
 <div class="emoji-rain" id="rain"></div>
 
 <div class="container">
-  <div class="title-bg">滚</div>
+  <div class="title-bg">👊</div>
 
-  <div class="top-bar">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="top-bar" id="topBar"></div>
 
   <div class="count-wrap">
     <div class="count" id="countDisplay">0</div>
   </div>
 
   <div class="label">
-    <span>被</span><span> </span><span>骂</span><span> </span><span>滚</span><span> </span><span>的</span><span> </span><span>次</span><span> </span><span>数</span>
+    <span>揍</span><span> </span><span>张</span><span> </span><span>永</span><span> </span><span>建</span><span> </span><span>的</span><span> </span><span>次</span><span> </span><span>数</span>
   </div>
 
   <div class="btn-wrap">
@@ -426,7 +650,7 @@ canvas#particles {
 
   <div class="text-card">
     <div class="text-card-inner">
-      <div class="placeholder-line" id="placeholder">点一下「滚」试试 · 有脾气就发出来</div>
+      <div class="placeholder-line" id="placeholder">揍张永建一拳试试</div>
       <div class="phrase-line" id="line1"></div>
       <div class="divider-line" id="divider"></div>
       <div class="phrase-line" id="line2"></div>
@@ -454,192 +678,172 @@ canvas#particles {
   let raf;
   let textTimer = null;
   let clickCooldown = false;
+  let idleTimer;
 
   const angry = [
-    '张永建你给我滚啊！',
-    '张永建你有病吧！',
-    '张永建你是不是有病！',
-    '张永建滚远点！',
-    '张永建你烦不烦！',
-    '张永建你有完没完！',
-    '张永建你真是够了！',
-    '张永建你能不能消停会！',
-    '张永建你脑子有坑吧！',
-    '张永建你给我爬！',
-    '张永建你走开啊！',
-    '张永建你气死我了！',
-    '张永建你能不能闭嘴！',
-    '张永建我要被你气死了！',
-    '张永建你离我远点！',
-    '张永建你是来捣乱的吗！',
-    '张永建你是不是闲得慌！',
-    '张永建你没事干是吧！',
-    '张永建我真的无语了！',
-    '张永建你是不是傻！',
-    '张永建你清醒一点！',
-    '张永建你到底想怎样！',
-    '张永建我不想看到你！',
-    '张永建你怎么又来了！',
-    '张永建你放过我吧！',
-    '张永建我跟你没话说！',
-    '张永建你能不能正常点！',
-    '张永建你是不是找骂！',
-    '张永建你不要太过分了！',
+    '揍你丫的张永建！',
+    '张永建看拳！',
+    '吃我一拳张永建！',
+    '张永建你欠揍！',
+    '这一拳是替天行道！',
+    '张永建挨打要站稳！',
+    '右勾拳！张永建！',
+    '左勾拳！张永建！',
     '张永建我忍你很久了！',
-    '张永建你给我消失！',
-    '张永建你怎么还没完！',
-    '张永建你有毒吧！',
-    '张永建你是魔鬼吗！',
-    '张永建我真的会谢！',
-    '张永建你别逼我骂人！',
-    '张永建你是不是故意的！',
-    '张永建你是不是觉得很好玩！',
-    '张永建你能不能长点记性！',
-    '张永建你是属苍蝇的吗！',
-    '张永建你真是阴魂不散！',
-    '张永建你咋又冒出来了！',
-    '张永建你捣什么乱！',
-    '张永建你是不是皮痒了！',
-    '张永建你是不是欠收拾！',
-    '张永建你能不能安分点！',
-    '张永建你是上天派来气我的吗！',
-    '张永建我真的服了你了！',
-    '张永建你到底要闹哪样！',
-    '张永建你再这样我生气了！',
-    '张永建你给我适可而止！',
-    '张永建你是不是喝多了！',
-    '张永建你没睡醒是吧！',
-    '张永建你是不是吃错药了！',
-    '张永建你脑袋进水了吧！',
-    '张永建你是不是被门夹了！',
-    '张永建你真是不可理喻！',
-    '张永建我跟你沟通不了！',
-    '张永建你能不能成熟一点！',
-    '张永建你别在这发疯！',
-    '张永建你真是够了够的！',
-    '张永建你是不是小说看多了！',
-    '张永建你现实一点行不行！',
-    '张永建你能不能不要这么幼稚！',
-    '张永建你几岁了还这样！',
-    '张永建你是不是觉得这样很有趣！',
-    '张永建我真的不想搭理你！',
-    '张永建你离我屏幕远点！',
-    '张永建你能不能不折腾！',
-    '张永建你是不是一天不搞事就难受！',
-    '张永建你真是个人才！',
-    '张永建我谢谢你啊！',
-    '张永建你可真行！',
-    '张永建你厉害！',
-    '张永建我投降行了吧！',
-    '张永建我认输了还不行吗！',
-    '张永建你赢了行了吧！',
-    '张永建我给你跪了！',
-    '张永建你是我见过最执着的人！',
-    '张永建你真是坚持不懈啊！',
-    '张永建你是不是住在网上了！',
-    '张永建你刷新速度也太快了吧！',
-    '张永建你是机器人吗！',
+    '吃我一套组合拳！',
+    '张永建吃我一记上勾拳！',
+    '张永建你脸皮真厚！',
+    '这拳打你的大脸！',
+    '张永建你跑什么跑！',
+    '正中面门！张永建！',
+    '张永建你脸肿了吗！',
+    '这一拳教你做人！',
+    '张永建接招吧！',
+    '吃我一记左正蹬！',
+    '接我一套军体拳！',
+    '张永建你服不服！',
+    '这一拳你躲不掉的！',
+    '张永建我打！',
+    '哈！张永建吃拳！',
+    '张永建你还敢来！',
+    '张永建你是不是皮痒！',
+    '张永建欠教育！',
+    '吃我一记升龙拳！',
+    '张永建倒地吧！',
+    '张永建别跑！',
+    '张永建哪里逃！',
+    '吃我一拳再说话！',
+    '拳打张永建！',
+    '张永建你挨揍的命！',
+    '张永建今天打到你服！',
+    '这一拳打你的傲慢！',
+    '张永建你的脸还真硬！',
+    '打的就是你张永建！',
+    '张永建这拳是利息！',
+    '张永建我还没打够！',
+    '张永建别躲！像个男人！',
+    '张永建你躲什么躲！',
+    '张永建你再嚣张啊！',
+    '这一拳清醒了吗！',
+    '张永建你还敢皮！',
+    '张永建给你点颜色看看！',
+    '张永建我劝你善良！',
+    '张永建吃我一棒！哦不，一拳！',
+    '张永建这一拳狠不狠！',
+    '张永建你脸都歪了！',
+    '张永建你咋又来了！',
+    '张永建你是不长记性！',
+    '张永建你欠打！',
+    '拳拳到肉张永建！',
+    '张永建你鼻青脸肿！',
+    '张永建服不服！不服再来！',
+    '张永建别嚣张！',
+    '张永建我打到你服！',
+    '张永建再吃一拳！',
+    '张永建你的脸是铁打的吗！',
+    '张永建疼不疼！',
+    '张永建还嘴硬！',
+    '张永建我倒要看看你多能扛！',
+    '张永建投降吧！',
+    '张永建你认输吧！',
+    '张永建何必呢！',
+    '张永建你自找的！',
+    '张永建你怨不得别人！',
+    '张永建别怪我下手狠！',
+    '张永建是你逼我的！',
+    '张永建我给你机会你不中用啊！',
+    '张永建你咋还不倒！',
+    '张永建你真是抗揍！',
+    '张永建你是不是练过！',
+    '张永建难道是铁下巴！',
+    '张永建站住别跑！',
+    '张永建吃我一记飞踢！哦不拳！',
+    '张永建我又来了！',
+    '张永建一点面子不给！',
+    '张永建我今天跟你没完！',
+    '张永建耗上了！',
+    '张永建我跟你拼了！',
+    '张永建你值得这一拳！',
+    '张永建收下吧！',
   ];
 
   const calm = [
-    '莫生气！莫生气！',
-    '气出病来无人替～',
-    '我若气死谁如意？',
-    '生气使人变老～',
-    '笑一笑，十年少',
-    '退一步海阔天空',
-    '为了小事发脾气，回头想想又何必',
-    '别人生气我不气，气出病来无人替',
-    '心平气和，万事如意',
-    '不生气不生气，气坏自己无人替',
-    '没什么大不了的～',
-    '算了算了，不跟他一般见识',
-    '深呼吸，放轻松～',
-    '生气是拿别人的错误惩罚自己',
-    '淡定淡定，一切都会过去的',
-    '忍一时风平浪静，退一步海阔天空',
-    '人生就像一场戏，因为有缘才相聚',
-    '相扶到老不容易，是否更该去珍惜',
-    '为了小事发脾气，回头想想又何必',
-    '别人生气我不气，气出病来无人替',
-    '我若气死谁如意，况且伤神又费力',
-    '邻居亲朋不要比，儿孙琐事由他去',
-    '吃苦享乐在一起，神仙羡慕好伴侣',
-    '人生短短几十年，何必较真又生气',
-    '命里有时终须有，命里无时莫强求',
-    '塞翁失马焉知非福，想开点吧',
-    '船到桥头自然直，别想太多啦',
-    '车到山前必有路，船到桥头自然直',
-    '阳光总在风雨后，请相信有彩虹',
-    '不经历风雨怎么见彩虹，没人能随随便便成功',
-    '生活不止眼前的苟且，还有诗和远方',
-    '世界那么大，何必跟人斤斤计较',
-    '放宽心胸，天地自然宽广',
-    '心若放宽，处处都是晴天',
-    '心若计较，处处都是阴霾',
-    '人的烦恼就十二个字：放不下、想不开、看不透、忘不了',
-    '学会放下，人生才更自在',
-    '得之坦然，失之淡然，顺其自然',
-    '争是不争，不争是争，夫唯不争，天下莫能与之争',
-    '大肚能容，容天下难容之事',
-    '开口便笑，笑世间可笑之人',
-    '笑口常开，好彩自然来',
-    '爱笑的人运气不会太差',
-    '保持微笑，好运自来',
-    '每天笑一笑，烦恼全忘掉',
-    '开心是一天，不开心也是一天，为什么不开心点呢',
-    '今天也是元气满满的一天呢',
-    '生活明朗，万物可爱，人间值得',
-    '世界很美好，值得我们去热爱',
-    '不要因为一点小事就否定全世界',
-    '格局放大一点，眼界放宽一点',
-    '站在高处看问题，站在低处过生活',
-    '用爱化解仇恨，用宽容化解愤怒',
-    '以德报怨，何以报德？以直报怨，以德报德',
-    '己所不欲，勿施于人',
-    '静坐常思己过，闲谈莫论人非',
-    '知足常乐，能忍自安',
-    '平安是福，平淡是真',
-    '广厦千间夜眠八尺，良田万顷日食三升',
-    '知足者贫贱亦乐，不知足者富贵亦忧',
-    '命里有时终须有，命里无时莫强求',
-    '万事劝人休瞒昧，举头三尺有神明',
-    '但行好事，莫问前程',
-    '与人方便，自己方便',
-    '吃亏是福，难得糊涂',
-    '聪明难，糊涂难，由聪明而转入糊涂更难',
-    '放一着，退一步，当下心安',
-    '凡事留一线，日后好相见',
-    '做人留一线，日后好相逢',
-    '不看僧面看佛面，不看鱼情看水情',
-    '抬手不打笑面人，开口不骂送礼人',
-    '良言一句三冬暖，恶语伤人六月寒',
-    '话不投机半句多，酒逢知己千杯少',
-    '多个朋友多条路，多个冤家多堵墙',
-    '冤家宜解不宜结，各自回头看后头',
-    '忍一时之气，免百日之忧',
-    '小不忍则乱大谋',
-    '气大伤身，还是算了吧',
-    '怒伤肝、喜伤心、思伤脾、忧伤肺、恐伤肾，别气啦',
-    '身体是自己的，气坏了没人替',
-    '为了自己的健康，不生气了',
-    '生气等于在自己体内释放毒素',
-    '研究表明生气会加速衰老哦',
-    '爱生气的人容易得高血压哦',
-    '深呼吸，把气吐出去，把快乐吸进来',
-    '呼～ 吸～ 呼～ 吸～ 心情好多了吧',
-    '闭上眼睛，想象自己在海边，放松～',
-    '生活已经很不容易了，对自己好一点',
-    '你要对得起自己的胃，去吃顿好的吧',
-    '没有什么是一顿火锅解决不了的',
-    '如果有，那就两顿',
-    '去吃点甜的，心情会变好的',
-    '喝杯奶茶冷静一下',
-    '摸摸自己的头，告诉自己没事的',
-    '抱抱自己，你已经很努力了',
-    '你是最棒的，不要让别人影响你的心情',
-    '你值得被温柔对待，包括被自己温柔对待',
-    '对自己好一点，因为全世界只有一个你',
+    '手打疼了吧，休息一下',
+    '打人也挺累的，歇会吧',
+    '暴力不能解决问题，但解气',
+    '打累了就喝口水吧',
+    '张永建的脸也怪疼的',
+    '差不多得了，消消气',
+    '你手不疼吗，我手都酸了',
+    '今天揍够了，明天继续',
+    '深呼吸，呼～ 刚刚打爽了没',
+    '别打了别打了，手会肿的',
+    '适可而止吧，打坏了还得赔',
+    '消消气，张永建已经鼻青脸肿了',
+    '打人不打脸，你专打脸啊',
+    '你是拳击手吗这么能打',
+    '张永建已经倒地不起了',
+    '一码归一码，打够了就收手',
+    '你今天已经揍了张永建好几顿了',
+    '张永建可能已经去医院了',
+    '做人留一线，张永建已经够惨了',
+    '得饶人处且饶人，虽然他很欠打',
+    '张永建：我错了还不行吗',
+    '拳头硬了又软，如此反复',
+    '打打更健康，出气又解压',
+    '这拳头不去打沙袋可惜了',
+    '你是不是把张永建当沙袋了',
+    '张永建上辈子是沙袋吧',
+    '你将来不去当拳击手可惜了',
+    '这一拳三年功力，张永建挡得住吗',
+    '张永建到底做错了什么要被你这样打',
+    '算了不打了，手疼',
+    '张永建：求求你别再打了',
+    '我感觉张永建已经习惯了',
+    '张永建可能已经麻木了',
+    '你累不累啊，我点鼠标都累了',
+    '歇一会，吃点东西再打',
+    '用拳头说话，但也要用脑子思考',
+    '打完后是不是舒服多了',
+    '解压神器：揍张永建',
+    '今日份揍张永建已完成',
+    '张永建：我到底哪里得罪你了',
+    '你是有多恨张永建啊',
+    '这到底是爱还是恨啊',
+    '打是亲骂是爱？',
+    '那你一定很爱张永建',
+    '你揍张永建的次数破纪录了',
+    '张永建的脸已经不成人形了',
+    '再打下去要出人命了',
+    '冷静冷静，打人不犯法但你手会疼',
+    '你今天是不是心情不好',
+    '张永建替你承受了所有',
+    '张永建：我是谁？我在哪？我为什么在挨打？',
+    '有没有一种可能，张永建是无辜的',
+    '算了，不管他了，打就打了',
+    '打完收工！',
+    '世界和平，除了张永建',
+    '把拳头收回来，为了下一拳更有力',
+    '张永建还在挨打，而你还在继续',
+    '你比张永建还执着',
+    '你是真的坚持不懈',
+    '这份毅力用在别处早就成功了',
+    '张永建都感动了，虽然他还在挨打',
+    '张永建：能不能换个人打',
+    '你眼里是不是只有张永建',
+    '张永建可能想报警了',
+    '打别人去啊，别可着一个打',
+    '张永建已经申请保护了',
+    '今天到此为止，明天继续揍',
+    '张永建：我谢谢你啊',
+    '你开心就好，张永建无所谓',
+    '揍张永建已经成了每日任务',
+    '今日活跃度：揍张永建',
+    '叮～ 今日揍张永建成就达成',
+    '你获得了成就【铁拳制裁】',
+    '你获得了成就【永建克星】',
+    '你获得了成就【拳王】',
+    '张永建获得了成就【挨揍大师】',
   ];
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -735,11 +939,55 @@ canvas#particles {
       return 0;
     }
 
-    const increment = Math.floor(Math.random() * 15) + 3;
-    autoData = { date: today, amount: increment };
+    const day = new Date().getDay();
+    const isWeekend = day === 0 || day === 6;
+    const hour = new Date().getHours();
+    const isNight = hour < 6 || hour > 22;
+
+    let base = Math.floor(Math.random() * 25) + 8;
+    let bonus = 0;
+
+    if (isWeekend) {
+      bonus += Math.floor(Math.random() * 30) + 10;
+    }
+    if (isNight) {
+      bonus += Math.floor(Math.random() * 20) + 5;
+    }
+    if (Math.random() < 0.15) {
+      bonus += Math.floor(Math.random() * 100) + 50;
+    }
+    if (Math.random() < 0.3) {
+      bonus += Math.floor(Math.random() * 15);
+    }
+
+    const peakHour = Math.floor(Math.random() * 8) + 10;
+    const peakAmount = Math.floor(Math.random() * 20) + 5;
+    const hourlySpread = [];
+    for (let i = 0; i < 24; i++) {
+      const proximity = 1 - Math.min(Math.abs(i - peakHour), 24 - Math.abs(i - peakHour)) / 12;
+      const count = proximity > 0 ? Math.floor(Math.random() * (1 + proximity * 3)) + 1 : 0;
+      if (count > 0) hourlySpread.push({ hour: i, count });
+    }
+
+    const isRageDay = Math.random() < 0.08;
+    const rageBonus = isRageDay ? Math.floor(Math.random() * 200) + 100 : 0;
+
+    const total = base + bonus + rageBonus;
+
+    const detail = {
+      base,
+      weekend: isWeekend ? Math.floor(Math.random() * 30) + 10 : 0,
+      night: isNight ? Math.floor(Math.random() * 20) + 5 : 0,
+      peakHour,
+      hourlySpread,
+      rageDay: isRageDay,
+      rageBonus,
+    };
+
+    autoData = { date: today, amount: total, detail };
     localStorage.setItem(AUTO_KEY, JSON.stringify(autoData));
 
-    return increment;
+    return total;
   }
 
   // ---- 伪造实时更新状态 ----
@@ -782,17 +1030,34 @@ canvas#particles {
     fakeOnline = true;
     updateStatus();
     updateRealtimeInfo();
+    startIdleEffects();
+    startCalmRotation();
   }
 
   // ---- 实时信息显示 ----
   function updateRealtimeInfo() {
-    const num = Math.floor(Math.random() * 30) + 20;
+    const r = Math.random();
+    let num;
+    if (r < 0.6) num = 1;
+    else if (r < 0.85) num = 2;
+    else num = 3;
     realtimeInfo.textContent = '· ' + num + ' 位网友在线 · 每日更新中';
   }
 
   function showAutoNotify(inc) {
     resetTextState();
-    line1.textContent = '📡 今日已有 ' + inc + ' 人点了「滚」';
+    let note = '📡 已有 ' + inc + ' 位网友揍了张永建';
+    let autoData;
+    try { autoData = JSON.parse(localStorage.getItem(AUTO_KEY)); } catch (e) {}
+    if (autoData && autoData.detail) {
+      const d = autoData.detail;
+      const parts = [];
+      if (d.weekend > 0) parts.push('周末加成+' + d.weekend);
+      if (d.night > 0) parts.push('夜间加成+' + d.night);
+      if (d.rageDay) parts.push('🔥暴躁日加成+' + d.rageBonus);
+      if (parts.length > 0) note += '（' + parts.join('，') + '）';
+    }
+    line1.textContent = note;
     line1.className = 'phrase-line calm calm-in';
     divider.className = 'divider-line in';
     textTimer = setTimeout(() => {
@@ -804,7 +1069,7 @@ canvas#particles {
         divider.className = 'divider-line';
         placeholder.style.opacity = '1';
       }, 500);
-    }, 2000);
+    }, 2500);
   }
 
   function resetTextState() {
@@ -847,16 +1112,13 @@ canvas#particles {
             divider.className = 'divider-line';
             placeholder.style.opacity = '1';
           }, 500);
-        }, 2200);
-      }, 350);
-    }, 1200);
+        }, 2800);
+      }, 850);
+    }, 1600);
   }
 
   function playVisuals() {
     spawnEmojis();
-    burstEffect();
-    nameRain();
-    nameBurst();
   }
 
   function updateUI(animate) {
@@ -877,108 +1139,91 @@ canvas#particles {
 
     count += 1;
     saveData();
+
+    // 随机出拳方向
+    const dirs = ['right', 'left', 'up', 'down'];
+    const dir = dirs[Math.floor(Math.random() * dirs.length)];
+    addBtn.classList.remove('punch-right', 'punch-left', 'punch-up', 'punch-down');
+    void addBtn.offsetLeft;
+    addBtn.classList.add('punch-' + dir);
+
+    // 张永建的脸出现
+    spawnFaceHit(dir);
+    spawnPunchText(dir);
+
     updateUI(true);
-
-    updateRealtimeInfo();
   }
 
-  const shortWords = [
-    '张永建！', '张永建滚', '张永建啊', '张永建……',
-    '滚！', '有病吧', '烦死了', '真是够了', '服了',
-    '莫生气', '消消气', '深呼吸', '算了吧', '不值得',
-    '淡定', '冷静', '笑一笑', '算了', '放宽心',
-    '6', '无语', '行吧', '你牛', '厉害了',
-    '绝了', '好家伙', '我滴妈', '救命', '夭寿啦',
-    '天呐', '我的天', '不是吧', '真的假的', '我不信',
-    '又来了', '又又又', '第几次了', '没完没了', '阴魂不散',
-    '求放过', '我错了', '别点了', '歇会吧', '我真服了',
-    '栓Q', '我真的会谢', '你礼貌吗', '你没事吧', '你还好吗',
-    '厉害啊', '真有你的', '牛哇', '大佬', '佩服佩服',
-    '告辞', '溜了', '拜拜', '再见', '后会无期',
-    '累了', '毁灭吧', '摆烂了', '躺平', '佛系',
-    '随他吧', '无所谓', '当没看见', '假装不在', '我很好',
-    '嗯嗯', '哦哦', '好的呢', '你说得对', '是是是',
-    '麻了', '蚌埠住了', '破防了', '绷不住了', '笑死',
-    '好活', '整挺好', '可以的', '没毛病', '说得好',
-  ];
-
-  function nameRain() {
-    const container = document.getElementById('rain');
-    const variants = angry.concat(shortWords);
-    const drops = [8, 10, 12, 14, 16];
-    for (const n of drops) {
-      setTimeout(() => {
-        for (let i = 0; i < 3; i++) {
-          const el = document.createElement('div');
-          el.textContent = variants[Math.floor(Math.random() * variants.length)];
-          const hue = 350 + Math.random() * 30;
-          const sat = 90 + Math.random() * 10;
-          const lit = 55 + Math.random() * 15;
-          el.style.cssText = `
-            position: fixed; pointer-events: none; z-index: 1000;
-            font-size: ${20 + Math.random() * 18}px;
-            font-weight: 900;
-            left: ${5 + Math.random() * 90}%;
-            top: -${20 + Math.random() * 30}px;
-            color: hsl(${hue}, ${sat}%, ${lit}%);
-            text-shadow: 0 0 25px hsla(${hue}, 100%, 60%, .5), 0 4px 15px rgba(0,0,0,.3);
-            white-space: nowrap;
-            letter-spacing: ${2 + Math.random() * 6}px;
-            animation: nameDrop ${2 + Math.random() * 2.5}s cubic-bezier(.22,.61,.36,1) forwards;
-            animation-delay: ${Math.random() * 0.3}s;
-            transform: rotate(${-15 + Math.random() * 30}deg);
-            opacity: 0;
-          `;
-          container.appendChild(el);
-          setTimeout(() => el.remove(), 5000);
-        }
-      }, n * 60);
-    }
-  }
-
-  function nameBurst() {
-    const container = document.getElementById('rain');
+  function spawnFaceHit(dir) {
     const rect = addBtn.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2 - 40;
-    const cy = rect.top - 10;
-    const burstWords = [
-      '张永建！', '张永建滚', '张永建啊', '张永建……',
-      '滚！', '有病吧', '烦死了', '真是够了',
-      '莫生气', '消消气', '深呼吸', '算了吧',
-      '淡定', '冷静', '笑一笑', '放宽心',
-      '好家伙', '我滴妈', '救命啊', '夭寿啦',
-      '天呐', '不是说好不生气的吗', '我忍', '再忍忍',
-      '气大伤身', '健康第一', '算了算了', '随他去吧',
-      '你厉害', '你牛', '我服了', '我认输',
-      '求求了', '别来了', '放过我', '我想静静',
-      '麻了麻了', '破大防', '绷不住', '笑死',
-      '好活当赏', '绝绝子', '真有你的', '不愧是你',
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const offsets = { right: [60, 0], left: [-60, 0], up: [0, -60], down: [0, 60] };
+    const [ox, oy] = offsets[dir] || [0, 0];
+
+    const faces = ['😫', '😵', '🥴', '😵‍💫', '🤕', '😩', '😭', '😰', '🥺', '😖', '😣', '😧', '😨', '🤯', '😤', '💀'];
+    const face = document.createElement('div');
+    face.className = 'face-hit';
+    face.textContent = faces[Math.floor(Math.random() * faces.length)];
+    face.style.left = (cx - 40 + ox) + 'px';
+    face.style.top = (cy - 40 + oy) + 'px';
+    face.style.fontSize = (70 + Math.random() * 40) + 'px';
+    const dirMap = { right: [120, 0], left: [-120, 0], up: [0, -120], down: [0, 120] };
+    const [fx, fy] = dirMap[dir] || [120, 0];
+    face.style.setProperty('--fx', fx + 'px');
+    face.style.setProperty('--fy', fy + 'px');
+    document.body.appendChild(face);
+
+    face.addEventListener('animationend', () => face.remove());
+
+    const labels = [
+      '啊！', '疼！', '别打！', '我错了！', '饶命！', '受不了！', '555~',
+      '好痛！', '别打了！', '我投降！', '对不起！', '饶了我吧！', '救命啊！',
+      '我改还不行吗！', '大哥我错了！', '放我一马！', '疼死我了！', '要死了！',
+      '不敢了！', '我服了！', '告辞！', '我走还不行吗！', '别追着打！',
+      '求放过！', '我太难了！', 'WHY ME！', 'No！！！', '救命！',
+      '别别别！', '啊——！', '晕了晕了！', '我裂开了！', '心态崩了！',
+      '我躲！', '打不着！', '哎哟！', '你玩真的啊！', '下死手啊！',
+      '能不能换个地方打！', '脸都打歪了！', '我英俊的脸啊！',
+      '你手不疼吗！', '好家伙！', '真有你的！', '我记住你了！',
+      '你等着！', '我还会回来的！', '三十年河东！', '君子报仇！',
+      '这一拳我记下了！', '打人不打脸！', '不带你这样的！', '你耍赖！',
     ];
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('div');
-      el.textContent = burstWords[Math.floor(Math.random() * burstWords.length)];
-      const angle = (i / 20) * Math.PI * 2 + (Math.random() - .5) * .4;
-      const dist = 100 + Math.random() * 180;
-      const size = 26 + Math.random() * 18;
-      const hue = 340 + Math.random() * 30;
-      el.style.cssText = `
-        position: fixed; pointer-events: none; z-index: 1000;
-        font-size: ${size}px; font-weight: 900;
-        left: ${cx - size * 0.6}px;
-        top: ${cy - size * 0.4}px;
-        color: hsl(${hue}, 100%, 55%);
-        text-shadow: 0 0 30px hsla(${hue}, 100%, 55%, .6), 0 4px 20px rgba(0,0,0,.3);
-        white-space: nowrap;
-        letter-spacing: 3px;
-        opacity: 0;
-        will-change: transform, opacity;
-      `;
-      container.appendChild(el);
-      el.animate([
-        { transform: 'translate(0,0) scale(.1) rotate(0deg)', opacity: 0, offset: 0 },
-        { transform: 'translate(0,0) scale(1.2) rotate(5deg)', opacity: 1, offset: .08 },
-        { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(.4) rotate(${360 * (Math.random() > .5 ? 1 : -1)}deg)`, opacity: 0, offset: 1 }
-      ], { duration: 1800 + Math.random() * 600, easing: 'ease-out' }).onfinish = () => el.remove();
+    const labelCount = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < labelCount; i++) {
+      setTimeout(() => {
+        const label = document.createElement('div');
+        label.className = 'punch-label';
+        label.textContent = labels[Math.floor(Math.random() * labels.length)];
+        label.style.left = (cx + 10 + Math.random() * 80 - 20 + ox) + 'px';
+        label.style.top = (cy - 90 + Math.random() * 100 + oy) + 'px';
+        label.style.fontSize = (18 + Math.random() * 24) + 'px';
+        const h = 30 + Math.random() * 30;
+        label.style.color = `hsl(${h}, 100%, ${55 + Math.random() * 25}%)`;
+        document.body.appendChild(label);
+        setTimeout(() => label.remove(), 1300);
+      }, i * 120);
+    }
+
+    const stars = ['💫', '✨', '⭐', '🌟', '💥', '✨', '⭐', '💢', '💨', '💫'];
+    for (let i = 0; i < 5 + Math.floor(Math.random() * 4); i++) {
+      setTimeout(() => {
+        const star = document.createElement('div');
+        star.className = 'hit-star';
+        star.textContent = stars[Math.floor(Math.random() * stars.length)];
+        const angle = (i / 6) * Math.PI * 2 + (Math.random() - .5) * .8;
+        const dist1 = 30 + Math.random() * 70;
+        const dist2 = dist1 + 20 + Math.random() * 60;
+        star.style.left = (cx + Math.cos(angle) * 15 + ox) + 'px';
+        star.style.top = (cy + Math.sin(angle) * 15 - 20 + oy) + 'px';
+        star.style.setProperty('--dx', Math.cos(angle) * dist1 + 'px');
+        star.style.setProperty('--dy', Math.sin(angle) * dist1 + 'px');
+        star.style.setProperty('--dx2', Math.cos(angle) * dist2 + 'px');
+        star.style.setProperty('--dy2', Math.sin(angle) * dist2 + 'px');
+        star.style.fontSize = (16 + Math.random() * 18) + 'px';
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1300);
+      }, i * 80);
     }
   }
 
@@ -998,25 +1243,110 @@ canvas#particles {
     }
   }
 
-  function burstEffect() {
-    for (let i = 0; i < 10; i++) {
-      const p = document.createElement('div');
-      p.style.cssText = `
-        position:fixed; width:5px; height:5px; border-radius:50%;
-        background: hsl(${340 + Math.random() * 30}, 100%, 60%);
-        pointer-events:none; z-index:1000; left:50%; top:50%;
-        box-shadow: 0 0 8px currentColor;
-        color: hsl(${340 + Math.random() * 30}, 100%, 60%);
-      `;
-      document.body.appendChild(p);
-      const angle = (i / 10) * Math.PI * 2 + (Math.random() - .5) * .5;
-      const dist = 70 + Math.random() * 140;
-      p.animate([
-        { transform: 'translate(0,0) scale(1)', opacity: 1 },
-        { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`, opacity: 0 }
-      ], { duration: 700 + Math.random() * 500, easing: 'ease-out' }).onfinish = () => p.remove();
+  function spawnPunchText(dir) {
+    const rect = addBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const offsets = { right: [40, 0], left: [-40, 0], up: [0, -40], down: [0, 40] };
+    const [ox, oy] = offsets[dir] || [0, 0];
+    const words = [
+      '看拳！', '打！', '揍你！', '哈！', '中！', '嘿！', '啪！', '咚！', '砰！', '看打！',
+      '吃我一拳！', '接招！', '这拳狠！', '倒下吧！', '服不服！', '再来！', '别躲！',
+      '正中面门！', '好拳！', '打到了！', '还没完！', '连环拳！', '最后一拳！',
+      '就这？', '还能打！', '你不行啊！', '太弱了！', '就这点本事？',
+      '站起来！', '我还没出力！', '你倒下了？', '太不经打了！',
+    ];
+    const styles = ['straight', 'up', 'spin', 'bounce', 'zigzag', 'shatter', 'swoop', 'wobble', 'spiral'];
+    const count = 5 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        const style = styles[Math.floor(Math.random() * styles.length)];
+        el.className = 'punch-word ' + style;
+        el.textContent = words[Math.floor(Math.random() * words.length)];
+        const angle = Math.random() * Math.PI * 2;
+        const d1 = 30 + Math.random() * 50;
+        const d2 = d1 + 50 + Math.random() * 70;
+        el.style.left = (cx - 20 + (Math.random() - .5) * 20 + ox) + 'px';
+        el.style.top = (cy - 20 + (Math.random() - .5) * 20 + oy) + 'px';
+        el.style.setProperty('--wx', Math.cos(angle) * d1 + 'px');
+        el.style.setProperty('--wy', Math.sin(angle) * d1 + 'px');
+        el.style.setProperty('--wx2', Math.cos(angle) * d2 + 'px');
+        el.style.setProperty('--wy2', Math.sin(angle) * d2 + 'px');
+        const h = 30 + Math.random() * 40;
+        el.style.color = `hsl(${h}, 100%, ${55 + Math.random() * 25}%)`;
+        el.style.fontSize = (18 + Math.random() * 24) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1600);
+      }, i * 80);
     }
   }
+
+  function startIdleEffects() {
+    function dropOne() {
+      const pool = [
+        ...angry, ...calm,
+        '啊！', '疼！', '别打！', '我错了！', '饶命！', '受不了！', '555~',
+        '好痛！', '别打了！', '我投降！', '对不起！', '饶了我吧！', '救命啊！',
+        '我改还不行吗！', '大哥我错了！', '放我一马！', '疼死我了！', '要死了！',
+        '不敢了！', '我服了！', '告辞！', '我走还不行吗！', '别追着打！',
+        '求放过！', '我太难了！', 'WHY ME！', 'No！！！', '救命！',
+        '别别别！', '啊——！', '晕了晕了！', '我裂开了！', '心态崩了！',
+        '能不能换个地方打！', '脸都打歪了！', '我英俊的脸啊！',
+        '你手不疼吗！', '好家伙！', '真有你的！', '我记住你了！',
+        '你等着！', '我还会回来的！', '三十年河东！', '君子报仇！',
+        '这一拳我记下了！', '打人不打脸！', '不带你这样的！', '你耍赖！',
+      ];
+      const el = document.createElement('div');
+      el.className = 'punch-word';
+      el.textContent = pool[Math.floor(Math.random() * pool.length)];
+      el.style.left = (2 + Math.random() * 72) + 'vw';
+      el.style.top = (8 + Math.random() * 65) + 'vh';
+      el.style.setProperty('--wx', (-50 + Math.random() * 100) + 'px');
+      el.style.setProperty('--wy', (-60 + Math.random() * 60) + 'px');
+      el.style.setProperty('--wx2', (-120 + Math.random() * 240) + 'px');
+      el.style.setProperty('--wy2', (-120 + Math.random() * 120) + 'px');
+      el.style.color = `hsl(${Math.random() * 60}, 100%, 60%)`;
+      el.style.fontSize = (18 + Math.random() * 24) + 'px';
+      const s = ['straight', 'up', 'spin', 'bounce', 'zigzag', 'shatter', 'swoop', 'wobble', 'spiral'];
+      el.classList.add(s[Math.floor(Math.random() * s.length)]);
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
+      const nextDelay = 1300 + Math.random() * 600;
+      idleTimer = setTimeout(dropOne, nextDelay);
+    }
+    for (let i = 0; i < 5; i++) {
+      setTimeout(dropOne, i * 400);
+    }
+  }
+
+  function startCalmRotation() {
+    const topBar = document.getElementById('topBar');
+    let idx = 0;
+    setInterval(() => {
+      if (topBar) {
+        topBar.textContent = calm[idx % calm.length];
+        idx++;
+      }
+    }, 3000);
+
+    let ridx = 0;
+    setInterval(() => {
+      const phrase = calm[ridx % calm.length];
+      realtimeInfo.textContent = '✨ ' + phrase;
+      ridx++;
+      setTimeout(() => {
+        const r = Math.random();
+        let num;
+        if (r < 0.6) num = 1;
+        else if (r < 0.85) num = 2;
+        else num = 3;
+        realtimeInfo.textContent = '· ' + num + ' 位网友在线 · 每日更新中';
+      }, 3500);
+    }, 5000);
+  }
+
+  let autoTextTimer;
 
   display.addEventListener('dblclick', function() {
     if (count === 0) return;
