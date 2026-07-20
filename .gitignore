@@ -1,0 +1,6 @@
+node_modules/
+data.json
+tunnel-url.txt
+tunnel-error.txt
+serveo.txt
+*.log

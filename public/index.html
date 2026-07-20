@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>滚 计数器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 20%, #1e1a3a, #0a0a14 70%);
+  color: #e0e0e0;
+  font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  overflow: hidden;
+}
+
+canvas#particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 主容器 */
+.container {
+  text-align: center;
+  padding: 48px 64px 36px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 48px;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow:
+    0 40px 100px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.04) inset,
+    0 0 100px rgba(180,60,200,.05);
+  transform: rotateX(1deg);
+  transition: transform .8s cubic-bezier(.23,1,.32,1);
+  max-width: 92vw;
+}
+.container:hover { transform: rotateX(0); }
+
+/* 背景大字 */
+.title-bg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(200px, 50vw, 500px);
+  font-weight: 900;
+  color: rgba(255,255,255,.012);
+  pointer-events: none;
+  letter-spacing: 30px;
+  z-index: 0;
+  line-height: 1;
+}
+
+/* 顶部装饰 */
+.top-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.top-bar span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  opacity: .3;
+}
+.top-bar span:nth-child(1) { background: #ff6b8a; }
+.top-bar span:nth-child(2) { background: #ffb347; }
+.top-bar span:nth-child(3) { background: #7bed9f; }
+
+/* 计数 */
+.count-wrap {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 8px;
+}
+.count {
+  font-size: clamp(100px, 22vw, 200px);
+  font-weight: 900;
+  line-height: 1;
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #ffb3c1 45%, #ff6b8a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 12px rgba(255,65,108,.15));
+  transition: transform .15s ease;
+}
+.count.pop {
+  animation: popBounce .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popBounce {
+  0% { transform: scale(1); filter: drop-shadow(0 4px 12px rgba(255,65,108,.15)); }
+  35% { transform: scale(1.2); filter: drop-shadow(0 8px 30px rgba(255,65,108,.35)); }
+  70% { transform: scale(.95); }
+  100% { transform: scale(1); filter: drop-shadow(0 4px 12px rgba(255,65,108,.15)); }
+}
+
+/* 标签 */
+.label {
+  font-size: 12px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 12px;
+  font-weight: 400;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+.label span {
+  display: inline-block;
+  animation: labelDrift 5s ease-in-out infinite;
+}
+.label span:nth-child(2) { animation-delay: .3s; }
+.label span:nth-child(3) { animation-delay: .6s; }
+.label span:nth-child(4) { animation-delay: .9s; }
+.label span:nth-child(5) { animation-delay: 1.2s; }
+.label span:nth-child(6) { animation-delay: 1.5s; }
+@keyframes labelDrift {
+  0%, 100% { transform: translateY(0); opacity: .3; }
+  50% { transform: translateY(-3px); opacity: .7; }
+}
+
+/* 按钮 */
+.btn-wrap {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+}
+
+.btn-main {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: none;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  cursor: pointer;
+  position: relative;
+  background: radial-gradient(circle at 36% 28%, #ff7a9a, #c4123a 65%, #6e0a20);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.06),
+    0 8px 32px rgba(255,65,108,.35),
+    0 0 80px rgba(255,65,108,.1),
+    inset 0 -6px 16px rgba(0,0,0,.45),
+    inset 0 4px 12px rgba(255,255,255,.2);
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  color: transparent;
+}
+.btn-main::before {
+  content: '滚';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  line-height: 130px;
+  text-indent: 6px;
+  color: rgba(255,255,255,.92);
+  text-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.btn-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.25), transparent 50%);
+  pointer-events: none;
+}
+.btn-main:hover {
+  transform: scale(1.07);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.1),
+    0 12px 40px rgba(255,65,108,.45),
+    0 0 100px rgba(255,65,108,.15),
+    inset 0 -6px 16px rgba(0,0,0,.45),
+    inset 0 4px 12px rgba(255,255,255,.25);
+}
+.btn-main:active {
+  transform: scale(.9);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.03),
+    0 4px 16px rgba(255,65,108,.2),
+    inset 0 -3px 8px rgba(0,0,0,.5),
+    inset 0 2px 6px rgba(255,255,255,.1);
+}
+
+/* 发光环 */
+.glow-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 160px; height: 160px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255,65,108,.07);
+  animation: ringPulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.glow-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: 1s; }
+.glow-ring:nth-child(3) { width: 240px; height: 240px; animation-delay: 2s; }
+@keyframes ringPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .3; }
+  50% { transform: translate(-50%, -50%) scale(1.12); opacity: .04; }
+}
+
+/* 底部阴影 */
+.btn-shadow {
+  width: 100px; height: 14px;
+  margin: -4px auto 0;
+  background: radial-gradient(ellipse, rgba(255,65,108,.25), transparent 70%);
+  border-radius: 50%;
+  filter: blur(8px);
+  position: relative;
+  z-index: 0;
+  transition: all .3s ease;
+}
+.btn-main:hover + .btn-shadow { transform: scale(1.2); opacity: .6; }
+.btn-main:active + .btn-shadow { transform: scale(.7); opacity: .3; }
+
+/* 今日剩余 */
+.daily-remain {
+  font-size: 11px;
+  color: rgba(255,255,255,.18);
+  letter-spacing: 3px;
+  margin-top: 18px;
+  position: relative;
+  z-index: 1;
+  min-height: 18px;
+  transition: all .3s ease;
+}
+
+/* 文本卡片 - 固定高度防止布局抖动 */
+.text-card {
+  margin-top: 22px;
+  height: 82px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-card-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* 空状态占位 */
+.placeholder-line {
+  font-size: 13px;
+  color: rgba(255,255,255,.08);
+  letter-spacing: 4px;
+  font-weight: 300;
+  opacity: 1;
+  transition: opacity .4s ease;
+}
+
+.phrase-line {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.phrase-line.angry {
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ff4757;
+  text-shadow: 0 0 30px rgba(255,71,87,.35), 0 4px 20px rgba(255,71,87,.15);
+}
+
+.phrase-line.calm {
+  font-size: clamp(16px, 2.4vw, 20px);
+  font-weight: 500;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #7bed9f, #70a1ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* angry 入场 */
+.phrase-line.angry-in {
+  animation: angryIn .55s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes angryIn {
+  0% { opacity: 0; transform: scale(.2) translateY(30px) rotate(-8deg) translateX(-20px); filter: blur(12px); }
+  45% { opacity: 1; transform: scale(1.12) translateY(-4px) rotate(1deg) translateX(2px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0) rotate(0) translateX(0); filter: blur(0); }
+}
+
+/* angry 退场 */
+.phrase-line.angry-out {
+  animation: angryOut .4s cubic-bezier(.6,-.28,.74,.05) forwards;
+}
+@keyframes angryOut {
+  0% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+  100% { opacity: 0; transform: scale(1.4) translateY(-24px) rotate(4deg); filter: blur(8px); }
+}
+
+/* calm 入场 */
+.phrase-line.calm-in {
+  animation: calmIn .8s cubic-bezier(.23,1,.32,1) forwards;
+}
+@keyframes calmIn {
+  0% { opacity: 0; transform: translateY(16px) scale(.92); filter: blur(6px); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* calm 退场 */
+.phrase-line.calm-out {
+  animation: calmOut .6s ease-in forwards;
+}
+@keyframes calmOut {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-12px) scale(.88); }
+}
+
+/* 分割线 */
+.divider-line {
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  margin: 4px 0;
+  transition: none;
+}
+.divider-line.in { animation: dividerGrow .45s ease forwards; }
+@keyframes dividerGrow {
+  0% { width: 0; opacity: 0; }
+  100% { width: 100px; opacity: 1; }
+}
+.divider-line.out { animation: dividerShrink .35s ease forwards; }
+@keyframes dividerShrink {
+  0% { width: 100px; opacity: 1; }
+  100% { width: 0; opacity: 0; }
+}
+
+/* 状态 */
+.status {
+  margin-top: 20px;
+  font-size: 10px;
+  color: rgba(255,255,255,.1);
+  letter-spacing: 3px;
+  position: relative;
+  z-index: 1;
+}
+.status.online { color: rgba(100,255,100,.2); }
+.status.offline { color: rgba(255,100,100,.2); }
+
+/* Emoji 雨 */
+.emoji-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+.emoji {
+  position: absolute;
+  font-size: 28px;
+  animation: emojiFall linear forwards;
+  will-change: transform, opacity;
+}
+@keyframes nameDrop {
+  0% { transform: translateY(0) rotate(-12deg) scale(.2); opacity: 0; filter: blur(6px); }
+  15% { opacity: 1; transform: translateY(15vh) rotate(3deg) scale(1.1); filter: blur(0); }
+  80% { opacity: 1; transform: translateY(80vh) rotate(15deg) scale(.8); filter: blur(0); }
+  100% { transform: translateY(110vh) rotate(25deg) scale(.3); opacity: 0; filter: blur(4px); }
+}
+
+@keyframes emojiFall {
+  0% { transform: translateY(-60px) rotate(0deg) scale(.4); opacity: 0; }
+  8% { opacity: 1; transform: translateY(0) rotate(25deg) scale(1); }
+  100% { transform: translateY(100vh) rotate(1080deg) scale(.2); opacity: 0; }
+}
+
+/* 响应式 */
+@media (max-width: 520px) {
+  .container { padding: 32px 28px 28px; border-radius: 32px; }
+  .btn-main { width: 110px; height: 110px; }
+  .btn-main::before { line-height: 110px; }
+  .daily-remain { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="emoji-rain" id="rain"></div>
+
+<div class="container">
+  <div class="title-bg">滚</div>
+
+  <div class="top-bar">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="count-wrap">
+    <div class="count" id="countDisplay">0</div>
+  </div>
+
+  <div class="label">
+    <span>被</span><span> </span><span>骂</span><span> </span><span>滚</span><span> </span><span>的</span><span> </span><span>次</span><span> </span><span>数</span>
+  </div>
+
+  <div class="btn-wrap">
+    <div class="glow-ring"></div>
+    <div class="glow-ring"></div>
+    <div class="glow-ring"></div>
+    <button class="btn-main" id="addBtn"></button>
+  </div>
+  <div class="btn-shadow"></div>
+
+  <div class="daily-remain" id="dailyRemain"></div>
+
+  <div class="text-card">
+    <div class="text-card-inner">
+      <div class="placeholder-line" id="placeholder">点一下「滚」试试</div>
+      <div class="phrase-line" id="line1"></div>
+      <div class="divider-line" id="divider"></div>
+      <div class="phrase-line" id="line2"></div>
+    </div>
+  </div>
+
+  <div class="status" id="status">连接中...</div>
+</div>
+
+<script>
+(function() {
+  const display = document.getElementById('countDisplay');
+  const addBtn = document.getElementById('addBtn');
+  const statusEl = document.getElementById('status');
+  const line1 = document.getElementById('line1');
+  const line2 = document.getElementById('line2');
+  const divider = document.getElementById('divider');
+  const placeholder = document.getElementById('placeholder');
+  const dailyRemain = document.getElementById('dailyRemain');
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+
+  let count = 0;
+  let particles = [];
+  let raf;
+  let ws;
+  let reconnectTimer;
+  let textTimer = null;
+  let firstSync = true;
+  let clickCooldown = false;
+  let animFrameId = 0;
+
+  const angry = [
+    '张永建你给我滚啊！',
+    '张永建你有病吧！',
+    '张永建你是不是有病！',
+    '张永建滚远点！',
+    '张永建你烦不烦！',
+    '张永建你有完没完！',
+    '张永建你真是够了！',
+    '张永建你能不能消停会！',
+    '张永建你脑子有坑吧！',
+    '张永建你给我爬！',
+    '张永建你走开啊！',
+    '张永建你气死我了！',
+    '张永建你能不能闭嘴！',
+    '张永建我要被你气死了！',
+    '张永建你离我远点！',
+  ];
+
+  const calm = [
+    '莫生气！莫生气！',
+    '气出病来无人替～',
+    '我若气死谁如意？',
+    '生气使人变老～',
+    '笑一笑，十年少',
+    '退一步海阔天空',
+    '为了小事发脾气，回头想想又何必',
+    '别人生气我不气，气出病来无人替',
+    '心平气和，万事如意',
+    '不生气不生气，气坏自己无人替',
+    '没什么大不了的～',
+    '算了算了，不跟他一般见识',
+    '深呼吸，放轻松～',
+    '生气是拿别人的错误惩罚自己',
+    '淡定淡定，一切都会过去的',
+  ];
+
+  const dailyStop = [
+    '别生气啦，气坏身体不值得',
+    '少生气，多笑笑，十年少～',
+    '别跟她一般见识，消消气',
+    '莫生气！莫生气！气出病来无人替',
+    '深呼吸～ 放轻松～ 没什么大不了的',
+    '生气是拿别人的错误惩罚自己',
+    '别气了别气了，不值得不值得',
+    '消消气，气坏了身子没人替',
+    '算了算了，不气了，笑一个',
+    '少生气少生气，生气使人变老',
+    '淡定淡定，一切都会过去的',
+    '别拿别人的错误惩罚自己，算了',
+    '气大伤身，放过自己吧',
+    '别生气了，生气解决不了问题',
+    '来，深呼吸，呼～ 吸～ 好了',
+  ];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + .3;
+      this.speedX = (Math.random() - .5) * .25;
+      this.speedY = (Math.random() - .5) * .25;
+      this.opacity = Math.random() * .4 + .06;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+      ctx.fill();
+    }
+  }
+  for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) { p.update(); p.draw(); }
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(180,80,200,${.04 * (1 - dist / 100)})`;
+          ctx.lineWidth = .4;
+          ctx.stroke();
+        }
+      }
+    }
+    raf = requestAnimationFrame(animateParticles);
+  }
+  animateParticles();
+
+  function getDailyKey() {
+    const d = new Date();
+    return 'gun_daily_' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function getDailyCount() { return parseInt(localStorage.getItem(getDailyKey())) || 0; }
+  function incDailyCount() {
+    const k = getDailyKey();
+    localStorage.setItem(k, getDailyCount() + 1);
+    updateDailyRemain();
+  }
+
+  function updateDailyRemain() {
+    const used = getDailyCount();
+    const left = Math.max(0, 3 - used);
+    dailyRemain.textContent = left > 0 ? '今日剩余 ' + left + ' 次' : '今日已满，明天再来吧';
+  }
+
+  function connect() {
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${protocol}//${location.host}`);
+    ws.onopen = () => {
+      statusEl.textContent = '已连接 · 实时同步中';
+      statusEl.className = 'status online';
+      clearTimeout(reconnectTimer);
+    };
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'update') {
+          if (firstSync) { firstSync = false; count = msg.count; updateUI(false); updateDailyRemain(); }
+          else if (msg.count > count) { count = msg.count; updateUI(true); updateDailyRemain(); }
+          else count = msg.count;
+        }
+      } catch (err) { /* ignore */ }
+    };
+    ws.onclose = () => {
+      statusEl.textContent = '连接断开，正在重连...';
+      statusEl.className = 'status offline';
+      reconnectTimer = setTimeout(connect, 2000);
+    };
+    ws.onerror = () => { ws.close(); };
+  }
+
+  function resetTextState() {
+    clearTimeout(textTimer);
+    line1.className = 'phrase-line';
+    line2.className = 'phrase-line';
+    divider.className = 'divider-line';
+    line1.textContent = '';
+    line2.textContent = '';
+    placeholder.style.opacity = '0';
+  }
+
+  function showTextEffect() {
+    resetTextState();
+
+    const a = pick(angry);
+    const c = pick(calm);
+
+    line1.textContent = a;
+    line1.className = 'phrase-line angry angry-in';
+
+    setTimeout(() => {
+      line1.className = 'phrase-line angry angry-out';
+      divider.className = 'divider-line out';
+
+      setTimeout(() => {
+        line1.textContent = '';
+        line1.className = 'phrase-line';
+        divider.className = 'divider-line';
+
+        line2.textContent = c;
+        line2.className = 'phrase-line calm calm-in';
+        divider.className = 'divider-line in';
+
+        textTimer = setTimeout(() => {
+          line2.className = 'phrase-line calm calm-out';
+          setTimeout(() => {
+            line2.className = 'phrase-line';
+            line2.textContent = '';
+            divider.className = 'divider-line';
+            placeholder.style.opacity = '1';
+          }, 600);
+        }, 3200);
+      }, 400);
+    }, 2000);
+  }
+
+  function showLimitEffect() {
+    resetTextState();
+    const msg = pick(dailyStop);
+    line2.textContent = msg;
+    line2.className = 'phrase-line calm calm-in';
+    divider.className = 'divider-line in';
+    textTimer = setTimeout(() => {
+      line2.className = 'phrase-line calm calm-out';
+      setTimeout(() => {
+        line2.className = 'phrase-line';
+        line2.textContent = '';
+        divider.className = 'divider-line';
+        placeholder.style.opacity = '1';
+      }, 600);
+    }, 3500);
+  }
+
+  function playVisuals() {
+    spawnEmojis();
+    burstEffect();
+    nameRain();
+    nameBurst();
+  }
+
+  function updateUI(animate) {
+    display.textContent = count;
+    if (animate) {
+      display.classList.remove('pop');
+      void display.offsetWidth;
+      display.classList.add('pop');
+      playVisuals();
+      showTextEffect();
+    }
+  }
+
+  async function addCount() {
+    if (clickCooldown) return;
+    clickCooldown = true;
+    setTimeout(() => { clickCooldown = false; }, 400);
+
+    if (getDailyCount() >= 3) {
+      playVisuals();
+      showLimitEffect();
+      return;
+    }
+    try {
+      await fetch('/api/count', { method: 'POST' });
+      incDailyCount();
+      playVisuals();
+      showTextEffect();
+      display.classList.remove('pop');
+      void display.offsetWidth;
+      display.classList.add('pop');
+    } catch (e) { /* will reconnect */ }
+  }
+
+  const shortWords = [
+    '张永建！', '张永建滚', '张永建啊', '张永建……',
+    '滚！', '有病吧', '烦死了', '真是够了', '服了',
+    '莫生气', '消消气', '深呼吸', '算了吧', '不值得',
+    '淡定', '冷静', '笑一笑', '算了', '放宽心',
+    '6', '无语', '行吧', '你牛', '厉害了',
+  ];
+
+  function nameRain() {
+    const container = document.getElementById('rain');
+    const variants = angry.concat(shortWords);
+    const drops = [8, 10, 12, 14, 16];
+    for (const n of drops) {
+      setTimeout(() => {
+        for (let i = 0; i < 3; i++) {
+          const el = document.createElement('div');
+          el.textContent = variants[Math.floor(Math.random() * variants.length)];
+          const hue = 350 + Math.random() * 30;
+          const sat = 90 + Math.random() * 10;
+          const lit = 55 + Math.random() * 15;
+          el.style.cssText = `
+            position: fixed; pointer-events: none; z-index: 1000;
+            font-size: ${20 + Math.random() * 18}px;
+            font-weight: 900;
+            left: ${5 + Math.random() * 90}%;
+            top: -${20 + Math.random() * 30}px;
+            color: hsl(${hue}, ${sat}%, ${lit}%);
+            text-shadow: 0 0 25px hsla(${hue}, 100%, 60%, .5), 0 4px 15px rgba(0,0,0,.3);
+            white-space: nowrap;
+            letter-spacing: ${2 + Math.random() * 6}px;
+            animation: nameDrop ${2 + Math.random() * 2.5}s cubic-bezier(.22,.61,.36,1) forwards;
+            animation-delay: ${Math.random() * 0.3}s;
+            transform: rotate(${-15 + Math.random() * 30}deg);
+            opacity: 0;
+          `;
+          container.appendChild(el);
+          setTimeout(() => el.remove(), 5000);
+        }
+      }, n * 60);
+    }
+  }
+
+  function nameBurst() {
+    const container = document.getElementById('rain');
+    const rect = addBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2 - 40;
+    const cy = rect.top - 10;
+    const burstWords = [
+      '张永建！', '张永建滚', '张永建啊', '张永建……',
+      '滚！', '有病吧', '烦死了', '真是够了',
+      '莫生气', '消消气', '深呼吸', '算了吧',
+      '淡定', '冷静', '笑一笑', '放宽心',
+    ];
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.textContent = burstWords[Math.floor(Math.random() * burstWords.length)];
+      const angle = (i / 20) * Math.PI * 2 + (Math.random() - .5) * .4;
+      const dist = 100 + Math.random() * 180;
+      const size = 26 + Math.random() * 18;
+      const hue = 340 + Math.random() * 30;
+      el.style.cssText = `
+        position: fixed; pointer-events: none; z-index: 1000;
+        font-size: ${size}px; font-weight: 900;
+        left: ${cx - size * 0.6}px;
+        top: ${cy - size * 0.4}px;
+        color: hsl(${hue}, 100%, 55%);
+        text-shadow: 0 0 30px hsla(${hue}, 100%, 55%, .6), 0 4px 20px rgba(0,0,0,.3);
+        white-space: nowrap;
+        letter-spacing: 3px;
+        opacity: 0;
+        will-change: transform, opacity;
+      `;
+      container.appendChild(el);
+      el.animate([
+        { transform: 'translate(0,0) scale(.1) rotate(0deg)', opacity: 0, offset: 0 },
+        { transform: 'translate(0,0) scale(1.2) rotate(5deg)', opacity: 1, offset: .08 },
+        { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(.4) rotate(${360 * (Math.random() > .5 ? 1 : -1)}deg)`, opacity: 0, offset: 1 }
+      ], { duration: 1800 + Math.random() * 600, easing: 'ease-out' }).onfinish = () => el.remove();
+    }
+  }
+
+  function spawnEmojis() {
+    const container = document.getElementById('rain');
+    const pool = ['💢', '😤', '💥', '🗯️', '👊', '😭', '💀', '🔥', '😡', '🤬'];
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement('div');
+      el.className = 'emoji';
+      el.textContent = pool[Math.floor(Math.random() * pool.length)];
+      el.style.left = (5 + Math.random() * 90) + '%';
+      el.style.fontSize = (18 + Math.random() * 26) + 'px';
+      el.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+      el.style.animationDelay = (Math.random() * .5) + 's';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+  }
+
+  function burstEffect() {
+    for (let i = 0; i < 10; i++) {
+      const p = document.createElement('div');
+      p.style.cssText = `
+        position:fixed; width:5px; height:5px; border-radius:50%;
+        background: hsl(${340 + Math.random() * 30}, 100%, 60%);
+        pointer-events:none; z-index:1000; left:50%; top:50%;
+        box-shadow: 0 0 8px currentColor;
+        color: hsl(${340 + Math.random() * 30}, 100%, 60%);
+      `;
+      document.body.appendChild(p);
+      const angle = (i / 10) * Math.PI * 2 + (Math.random() - .5) * .5;
+      const dist = 70 + Math.random() * 140;
+      p.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`, opacity: 0 }
+      ], { duration: 700 + Math.random() * 500, easing: 'ease-out' }).onfinish = () => p.remove();
+    }
+  }
+
+  display.addEventListener('dblclick', async function() {
+    if (count === 0) return;
+    if (confirm('确定删除本地记录？')) {
+      try { await fetch('/api/reset', { method: 'POST' }); } catch (e) { /* ignore */ }
+    }
+  });
+
+  addBtn.addEventListener('click', addCount);
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); addCount(); }
+  });
+
+  updateDailyRemain();
+  connect();
+})();
+</script>
+</body>
+</html>
