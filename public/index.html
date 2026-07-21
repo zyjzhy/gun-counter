@@ -1097,8 +1097,8 @@ canvas#particles {
   function updateRealtimeInfo() {
     const r = Math.random();
     let num;
-    if (r < 0.6) num = 1;
-    else if (r < 0.85) num = 2;
+    if (r < .8) num = 1;
+    else if (r < .95) num = 2;
     else num = 3;
     realtimeInfo.textContent = '· ' + num + ' 位网友在线 · 每日更新中';
   }
@@ -1412,8 +1412,8 @@ canvas#particles {
       setTimeout(() => {
         const r = Math.random();
         let num;
-        if (r < 0.6) num = 1;
-        else if (r < 0.85) num = 2;
+        if (r < .8) num = 1;
+        else if (r < .95) num = 2;
         else num = 3;
         realtimeInfo.textContent = '· ' + num + ' 位网友在线 · 每日更新中';
       }, 3500);
