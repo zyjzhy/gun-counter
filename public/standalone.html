@@ -609,6 +609,18 @@ canvas#particles {
   font-style: normal;
   color: rgba(100,255,150,.5);
 }
+.today-count {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.today-count em {
+  font-style: normal;
+  color: rgba(255,200,100,.55);
+}
 
 @media (max-width: 520px) {
   .container { padding: 24px 20px 20px; border-radius: 28px; width: 94vw; max-width: 94vw; }
@@ -666,6 +678,8 @@ canvas#particles {
 
   <div class="realtime-info" id="realtimeInfo">· 全球网友也在参与 ·</div>
 
+  <div class="today-count" id="todayCount">今日已揍 <em>0</em> 拳</div>
+
   <div class="text-card">
     <div class="text-card-inner">
       <div class="placeholder-line" id="placeholder">揍张永建一拳试试</div>
@@ -688,10 +702,12 @@ canvas#particles {
   const divider = document.getElementById('divider');
   const placeholder = document.getElementById('placeholder');
   const realtimeInfo = document.getElementById('realtimeInfo');
+  const todayCountEl = document.getElementById('todayCount');
   const canvas = document.getElementById('particles');
   const ctx = canvas.getContext('2d');
 
   let count = 0;
+  let todayClickCount = 0;
   let particles = [];
   let raf;
   let textTimer = null;
@@ -947,11 +963,11 @@ canvas#particles {
         if (typeof d.count === 'number' && typeof d.date === 'string') return d;
       }
     } catch (e) { /* ignore */ }
-    return { count: 0, date: '' };
+    return { count: 0, date: '', todayClicks: 0 };
   }
 
   function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ count, date: todayStr() }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ count, date: todayStr(), todayClicks: todayClickCount }));
   }
 
   function todayStr() {
@@ -1042,14 +1058,19 @@ canvas#particles {
   function init() {
     const saved = loadData();
     count = saved.count;
+    todayClickCount = saved.todayClicks || 0;
     const today = todayStr();
 
     if (saved.date !== today) {
       saved.date = today;
       saved.count = 0;
+      saved.todayClicks = 0;
       count = 0;
+      todayClickCount = 0;
       saveData();
     }
+
+    updateTodayCountDisplay();
 
     const autoInc = applyDailyAutoIncrement();
     if (autoInc > 0) {
@@ -1066,6 +1087,10 @@ canvas#particles {
     updateRealtimeInfo();
     startIdleEffects();
     startCalmRotation();
+  }
+
+  function updateTodayCountDisplay() {
+    todayCountEl.innerHTML = '今日已揍 <em>' + todayClickCount + '</em> 拳';
   }
 
   // ---- 实时信息显示 ----
@@ -1172,7 +1197,9 @@ canvas#particles {
     setTimeout(() => { clickCooldown = false; }, 400);
 
     count += 1;
+    todayClickCount += 1;
     saveData();
+    updateTodayCountDisplay();
 
     // 随机出拳方向
     const dirs = ['right', 'left', 'up', 'down'];
