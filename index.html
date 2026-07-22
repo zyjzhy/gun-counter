@@ -2,13 +2,27 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>滚 计数器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>揍你丫的</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  min-height: 100%;
+  background: #0a0a14;
+}
+
 body {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100svh;
+  height: var(--app-height, 100dvh);
+  width: 100%;
+  padding:
+    max(14px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    max(14px, env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-left, 0px));
   background: radial-gradient(ellipse at 50% 20%, #1e1a3a, #0a0a14 70%);
   color: #e0e0e0;
   font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
@@ -17,6 +31,7 @@ body {
   align-items: center;
   user-select: none;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 canvas#particles {
@@ -28,7 +43,7 @@ canvas#particles {
 
 .container {
   text-align: center;
-  padding: 40px 36px 32px;
+  padding: clamp(18px, 3.2vh, 32px) clamp(16px, 5vw, 30px) clamp(14px, 2.5vh, 24px);
   position: relative;
   z-index: 1;
   background: rgba(255,255,255,.04);
@@ -42,8 +57,10 @@ canvas#particles {
     0 0 100px rgba(180,60,200,.05);
   transform: rotateX(1deg);
   transition: transform .8s cubic-bezier(.23,1,.32,1);
-  width: 90vw;
+  width: min(440px, calc(100vw - 28px));
   max-width: 440px;
+  max-height: 100%;
+  margin: auto;
 }
 .container:hover { transform: rotateX(0); }
 
@@ -61,8 +78,8 @@ canvas#particles {
 }
 
 .top-bar {
-  height: 22px;
-  margin-bottom: 16px;
+  height: 20px;
+  margin-bottom: clamp(8px, 1.5vh, 14px);
   position: relative;
   z-index: 1;
   font-size: 12.5px;
@@ -73,6 +90,183 @@ canvas#particles {
   text-overflow: ellipsis;
   text-align: center;
   font-weight: 300;
+}
+
+.settings-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 10;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: rgba(255,255,255,.3);
+  transition: color .2s, transform .2s;
+  padding: 4px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.settings-btn:hover { color: rgba(255,255,255,.6); transform: rotate(30deg); }
+
+.settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+}
+.settings-overlay.open { display: flex; }
+
+.settings-panel {
+  background: rgba(30,26,58,.95);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  width: min(340px, calc(100vw - 40px));
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+.settings-panel h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.settings-row label {
+  font-size: 12px;
+  color: rgba(255,255,255,.4);
+  letter-spacing: 1px;
+}
+.settings-row input {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  font-family: inherit;
+  letter-spacing: 2px;
+}
+.settings-row input:focus {
+  border-color: rgba(255,200,100,.4);
+  box-shadow: 0 0 0 3px rgba(255,200,100,.08);
+}
+.settings-row input::placeholder { color: rgba(255,255,255,.2); letter-spacing: 1px; }
+
+.settings-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.settings-btn-act {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.settings-btn-act:active { transform: scale(.96); }
+
+/* 自定义确认弹窗 */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: rgba(30,26,58,.96);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  padding: 24px 22px 18px;
+  width: min(290px, calc(100vw - 50px));
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  text-align: center;
+}
+.modal-box p {
+  font-size: 14px;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-actions button:active { transform: scale(.96); }
+.modal-btn-cancel {
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.modal-btn-cancel:hover { background: rgba(255,255,255,.1); }
+.modal-btn-confirm {
+  background: rgba(255,71,87,.15);
+  color: rgba(255,100,110,.7);
+  border: 1px solid rgba(255,71,87,.15);
+}
+.modal-btn-confirm:hover { background: rgba(255,71,87,.25); }
+
+.settings-btn-reset {
+  background: rgba(255,71,87,.15);
+  color: rgba(255,100,110,.7);
+  border: 1px solid rgba(255,71,87,.15);
+}
+.settings-btn-reset:hover { background: rgba(255,71,87,.25); }
+.settings-btn-close {
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.settings-btn-close:hover { background: rgba(255,255,255,.1); }
+.settings-btn-cancel {
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.35);
+  border: 1px solid rgba(255,255,255,.04);
+}
+.settings-btn-cancel:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); }
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin: 2px 0 14px;
 }
 
 .count-wrap {
@@ -111,9 +305,9 @@ canvas#particles {
 .label {
   font-size: 13px;
   color: rgba(255,255,255,.5);
-  letter-spacing: 12px;
+  letter-spacing: 4px;
   font-weight: 300;
-  margin-bottom: 32px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
   position: relative;
   z-index: 1;
 }
@@ -134,12 +328,16 @@ canvas#particles {
 .btn-wrap {
   position: relative;
   z-index: 1;
-  display: inline-block;
+  display: grid;
+  place-items: center;
+  width: 300px;
+  height: 230px;
+  margin: -14px auto -6px;
 }
 
 .btn-main {
-  width: 130px;
-  height: 130px;
+  width: 154px;
+  height: 154px;
   border-radius: 50%;
   border: none;
   font-size: 24px;
@@ -147,52 +345,65 @@ canvas#particles {
   letter-spacing: 6px;
   cursor: pointer;
   position: relative;
-  background: radial-gradient(circle at 36% 28%, #ffcc99, #d4a574 45%, #8b6c4a);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.06),
-    0 8px 32px rgba(255,65,108,.35),
-    0 0 80px rgba(255,65,108,.1),
-    inset 0 -6px 16px rgba(0,0,0,.45),
-    inset 0 4px 12px rgba(255,255,255,.2);
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
   transition: all .3s cubic-bezier(.34,1.56,.64,1);
   color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  filter:
+    drop-shadow(0 20px 22px rgba(0,0,0,.35))
+    drop-shadow(0 0 34px rgba(255,65,108,.22));
+  will-change: transform;
+  z-index: 3;
+  --punch-x: 60px;
+  --punch-y: 0px;
 }
 .btn-main::before {
   content: '👊';
   position: absolute;
-  inset: 0;
+  inset: -10px;
   border-radius: 50%;
   pointer-events: none;
-  line-height: 130px;
-  text-indent: 6px;
-  color: rgba(255,255,255,.92);
-  text-shadow: 0 2px 8px rgba(0,0,0,.3);
-  font-size: 52px;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  text-indent: 0;
+  color: initial;
+  text-shadow: none;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 118px;
+  transform: translateY(3px) rotate(-8deg);
 }
 .btn-main::after {
   content: '';
   position: absolute;
-  inset: 0;
+  left: 18px;
+  right: 18px;
+  bottom: 8px;
+  height: 22px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 20%, rgba(255,220,180,.3), transparent 55%);
+  background: radial-gradient(ellipse, rgba(255,65,108,.38), transparent 72%);
+  filter: blur(8px);
+  opacity: .75;
   pointer-events: none;
 }
 .btn-main:hover {
   transform: scale(1.07);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.1),
-    0 12px 40px rgba(255,65,108,.45),
-    0 0 100px rgba(255,65,108,.15),
-    inset 0 -6px 16px rgba(0,0,0,.45),
-    inset 0 4px 12px rgba(255,255,255,.25);
+  filter:
+    drop-shadow(0 24px 26px rgba(0,0,0,.38))
+    drop-shadow(0 0 44px rgba(255,65,108,.3));
 }
 .btn-main:active {
   transform: scale(.9);
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.03),
-    0 4px 16px rgba(255,65,108,.2),
-    inset 0 -3px 8px rgba(0,0,0,.5),
-    inset 0 2px 6px rgba(255,255,255,.1);
+  filter:
+    drop-shadow(0 10px 12px rgba(0,0,0,.35))
+    drop-shadow(0 0 24px rgba(255,65,108,.2));
 }
 
 .glow-ring {
@@ -213,45 +424,121 @@ canvas#particles {
 }
 
 /* 出拳动画 - 四个方向 */
-.btn-main.punch-right {
-  animation: punchRight .35s cubic-bezier(.34,1.56,.64,1);
-}
-.btn-main.punch-left {
-  animation: punchLeft .35s cubic-bezier(.34,1.56,.64,1);
-}
-.btn-main.punch-up {
-  animation: punchUp .35s cubic-bezier(.34,1.56,.64,1);
-}
+.btn-main.punch-right,
+.btn-main.punch-left,
+.btn-main.punch-up,
 .btn-main.punch-down {
-  animation: punchDown .35s cubic-bezier(.34,1.56,.64,1);
+  animation: buttonPunchStrike .36s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes punchRight {
+@keyframes buttonPunchStrike {
   0% { transform: translateX(0) scale(1); }
-  30% { transform: translateX(60px) scale(1.15) rotate(10deg); }
-  55% { transform: translateX(60px) scale(.95) rotate(5deg); }
-  80% { transform: translateX(20px) scale(1.05); }
+  34% { transform: translate(var(--punch-x), var(--punch-y)) scale(1.16) rotate(var(--punch-rotate, 8deg)); }
+  55% { transform: translate(var(--punch-x), var(--punch-y)) scale(.95) rotate(calc(var(--punch-rotate, 8deg) * .45)); }
+  82% { transform: translate(calc(var(--punch-x) * .32), calc(var(--punch-y) * .32)) scale(1.04); }
   100% { transform: translateX(0) scale(1); }
 }
-@keyframes punchLeft {
-  0% { transform: translateX(0) scale(1); }
-  30% { transform: translateX(-60px) scale(1.15) rotate(-10deg); }
-  55% { transform: translateX(-60px) scale(.95) rotate(-5deg); }
-  80% { transform: translateX(-20px) scale(1.05); }
-  100% { transform: translateX(0) scale(1); }
+
+/* 直击正面 - 重拳砸脸 */
+.btn-main.punch-center {
+  animation: buttonDirectHit .42s cubic-bezier(.2,1.1,.3,1);
 }
-@keyframes punchUp {
-  0% { transform: translateY(0) scale(1); }
-  30% { transform: translateY(-60px) scale(1.15) rotate(-10deg); }
-  55% { transform: translateY(-60px) scale(.95) rotate(-5deg); }
-  80% { transform: translateY(-20px) scale(1.05); }
-  100% { transform: translateY(0) scale(1); }
+@keyframes buttonDirectHit {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.35) translateY(12px); }
+  50% { transform: scale(.92) translateY(4px); }
+  75% { transform: scale(1.06) translateY(-2px); }
+  100% { transform: scale(1); }
 }
-@keyframes punchDown {
-  0% { transform: translateY(0) scale(1); }
-  30% { transform: translateY(60px) scale(1.15) rotate(10deg); }
-  55% { transform: translateY(60px) scale(.95) rotate(5deg); }
-  80% { transform: translateY(20px) scale(1.05); }
-  100% { transform: translateY(0) scale(1); }
+
+.screen-shake {
+  animation: screenShake .32s ease-out;
+}
+@keyframes screenShake {
+  0% { transform: translate(0,0); }
+  15% { transform: translate(-4px,3px); }
+  30% { transform: translate(5px,-2px); }
+  45% { transform: translate(-3px,-4px); }
+  60% { transform: translate(2px,2px); }
+  80% { transform: translate(-1px,0); }
+  100% { transform: translate(0,0); }
+}
+
+.target-photo {
+  --tx: 118px;
+  --ty: 0px;
+  --hit-x: 16px;
+  --hit-y: 0px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 86px;
+  aspect-ratio: 1;
+  z-index: 5;
+  border-radius: 16px;
+  padding: 4px;
+  background: linear-gradient(145deg, rgba(255,255,255,.78), rgba(255,255,255,.16));
+  box-shadow:
+    0 16px 30px rgba(0,0,0,.32),
+    0 0 0 1px rgba(255,255,255,.26) inset,
+    0 0 34px rgba(100,255,180,.12);
+  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--target-rotate, 0deg)) scale(1);
+  opacity: .96;
+  pointer-events: none;
+  transition:
+    transform .44s cubic-bezier(.23,1,.32,1),
+    opacity .22s ease,
+    box-shadow .22s ease;
+  will-change: transform;
+}
+.target-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgba(255,255,255,.1);
+}
+.target-photo.hit {
+  animation: photoImpact .55s cubic-bezier(.2,1.1,.3,1) both;
+  box-shadow:
+    0 22px 38px rgba(0,0,0,.42),
+    0 0 0 2px rgba(255,255,255,.4) inset,
+    0 0 42px rgba(255,70,90,.42);
+}
+.target-photo.hit-center {
+  animation: photoImpactCenter .6s cubic-bezier(.15,1.2,.3,1) both;
+  box-shadow:
+    0 26px 44px rgba(0,0,0,.5),
+    0 0 0 3px rgba(255,255,120,.5) inset,
+    0 0 60px rgba(255,70,90,.6),
+    0 0 120px rgba(255,200,50,.15);
+}
+@keyframes photoImpactCenter {
+  0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: saturate(1); }
+  15% { transform: translate(-50%, -50%) scale(.7, 1.3) rotate(-4deg); filter: saturate(1.8) contrast(1.25); }
+  35% { transform: translate(-50%, -50%) scale(1.12, .88) rotate(3deg); }
+  55% { transform: translate(-50%, -50%) scale(.92, 1.04) rotate(-2deg); }
+  75% { transform: translate(-50%, -50%) scale(1.02, .98) rotate(1deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: saturate(1); }
+}
+.target-photo.hit::after {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,245,120,.8);
+  animation: impactRing .5s ease-out forwards;
+}
+@keyframes photoImpact {
+  0% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--target-rotate, 0deg)) scale(1); filter: saturate(1); }
+  22% { transform: translate(calc(-50% + var(--tx) + var(--hit-x)), calc(-50% + var(--ty) + var(--hit-y))) rotate(calc(var(--target-rotate, 0deg) + var(--impact-rotate, 16deg))) scale(.82, 1.18) translateZ(0); filter: saturate(1.5) contrast(1.15); }
+  44% { transform: translate(calc(-50% + var(--tx) - var(--hit-x) * .3), calc(-50% + var(--ty) - var(--hit-y) * .3)) rotate(calc(var(--target-rotate, 0deg) - var(--impact-rotate, 16deg) * .5)) scale(1.12, .9); }
+  66% { transform: translate(calc(-50% + var(--tx) + var(--hit-x) * .12), calc(-50% + var(--ty) + var(--hit-y) * .12)) rotate(calc(var(--target-rotate, 0deg) + var(--impact-rotate, 16deg) * .2)) scale(.96, 1.04); }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--target-rotate, 0deg)) scale(1); filter: saturate(1); }
+}
+@keyframes impactRing {
+  0% { transform: scale(.2); opacity: .95; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
 /* 张永建挨揍脸 */
@@ -429,8 +716,8 @@ canvas#particles {
 }
 
 .btn-shadow {
-  width: 100px; height: 14px;
-  margin: -4px auto 0;
+  width: 120px; height: 16px;
+  margin: -10px auto 0;
   background: radial-gradient(ellipse, rgba(255,65,108,.25), transparent 70%);
   border-radius: 50%;
   filter: blur(8px);
@@ -440,6 +727,37 @@ canvas#particles {
 }
 .btn-main:hover + .btn-shadow { transform: scale(1.2); opacity: .6; }
 .btn-main:active + .btn-shadow { transform: scale(.7); opacity: .3; }
+
+.photo-picker {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 8px auto 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.74);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .2s ease, background .2s ease;
+}
+.photo-picker:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.11);
+}
+.photo-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.photo-picker svg {
+  display: block;
+}
 
 .daily-remain {
   font-size: 11px;
@@ -453,8 +771,8 @@ canvas#particles {
 }
 
 .text-card {
-  margin-top: 22px;
-  min-height: 110px;
+  margin-top: clamp(10px, 1.8vh, 18px);
+  min-height: clamp(70px, 12vh, 100px);
   position: relative;
   z-index: 1;
   display: flex;
@@ -562,7 +880,7 @@ canvas#particles {
 }
 
 .status {
-  margin-top: 20px;
+  margin-top: clamp(8px, 1.5vh, 14px);
   font-size: 10px;
   color: rgba(255,255,255,.1);
   letter-spacing: 3px;
@@ -623,30 +941,48 @@ canvas#particles {
 }
 
 @media (max-width: 520px) {
-  .container { padding: 24px 20px 20px; border-radius: 28px; width: 94vw; max-width: 94vw; }
-  .btn-main { width: 100px; height: 100px; }
-  .btn-main::before { line-height: 100px; font-size: 42px; }
-  .label { font-size: 10px; letter-spacing: 8px; margin-bottom: 20px; }
-  .top-bar { font-size: 9px; height: 16px; margin-bottom: 12px; }
-  .daily-remain { font-size: 9px; margin-top: 14px; }
-  .text-card { min-height: 90px; }
-  .phrase-line.angry { font-size: clamp(16px, 4vw, 20px); }
-  .phrase-line.calm { font-size: clamp(13px, 3.5vw, 16px); }
-  .realtime-info { font-size: 8px; }
-  .face-hit { font-size: 50px !important; }
-  .punch-label { font-size: clamp(16px, 4vw, 24px) !important; }
+  .container { padding: 16px 16px 14px; border-radius: 24px; width: min(420px, calc(100vw - 20px)); max-width: calc(100vw - 20px); transform: none; }
+  .container:hover { transform: none; }
+  .btn-wrap { width: 240px; height: 190px; margin: -14px auto -4px; }
+  .btn-main { width: 120px; height: 120px; }
+  .btn-main::before { inset: -6px; font-size: 92px; transform: translateY(2px) rotate(-6deg); }
+  .target-photo { width: 66px; border-radius: 12px; padding: 3px; }
+  .target-photo img { border-radius: 9px; }
+  .label { font-size: 10px; margin-bottom: 10px; }
+  .top-bar { font-size: 9px; height: 16px; margin-bottom: 8px; }
+  .daily-remain { font-size: 9px; margin-top: 10px; }
+  .text-card { min-height: 64px; margin-top: 8px; }
+  .phrase-line.angry { font-size: clamp(14px, 3.5vw, 18px); }
+  .phrase-line.calm { font-size: clamp(12px, 3vw, 14px); }
+  .realtime-info { font-size: 9px; }
+  .today-count { font-size: 9px; }
+  .face-hit { font-size: 40px !important; }
+  .punch-label { font-size: clamp(14px, 3.5vw, 20px) !important; }
   .glow-ring { display: none; }
-  .btn-shadow { width: 70px; }
-  .count-wrap { margin: 0 auto 4px; }
+  .btn-shadow { display: none; }
+  .status { margin-top: 6px; }
+  .count-wrap { margin: 0 auto 2px; }
 }
 
 @media (max-width: 380px) {
-  .container { padding: 16px 14px 16px; border-radius: 20px; width: 96vw; max-width: 96vw; }
-  .btn-main { width: 80px; height: 80px; }
-  .btn-main::before { line-height: 80px; font-size: 36px; }
-  .label { letter-spacing: 4px; font-size: 9px; }
-  .text-card { min-height: 76px; }
-  .count { font-size: clamp(56px, 16vw, 80px); }
+  .container { padding: 12px 12px 10px; border-radius: 18px; width: min(340px, calc(100vw - 16px)); max-width: calc(100vw - 16px); }
+  .btn-wrap { width: 200px; height: 160px; margin: -12px auto -2px; }
+  .btn-main { width: 100px; height: 100px; }
+  .btn-main::before { inset: -6px; font-size: 76px; }
+  .target-photo { width: 54px; }
+  .label { font-size: 9px; margin-bottom: 8px; }
+  .text-card { min-height: 56px; }
+  .count { font-size: clamp(48px, 14vw, 68px); }
+  .realtime-info { font-size: 8px; }
+  .today-count { font-size: 8px; }
+  .top-bar { font-size: 8px; }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .container,
+  .container:hover {
+    transform: none;
+  }
 }
 </style>
 </head>
@@ -657,6 +993,12 @@ canvas#particles {
 
 <div class="container">
   <div class="title-bg">👊</div>
+    <button class="settings-btn" id="settingsBtn" aria-label="设置">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
 
   <div class="top-bar" id="topBar"></div>
 
@@ -664,17 +1006,28 @@ canvas#particles {
     <div class="count" id="countDisplay">0</div>
   </div>
 
-  <div class="label">
+  <div class="label" id="labelText">
     <span>揍</span><span> </span><span>张</span><span> </span><span>永</span><span> </span><span>建</span><span> </span><span>的</span><span> </span><span>次</span><span> </span><span>数</span>
   </div>
 
   <div class="btn-wrap">
+    <div class="target-photo" id="targetPhoto" aria-hidden="true">
+      <img id="targetImg" alt="">
+    </div>
     <div class="glow-ring"></div>
     <div class="glow-ring"></div>
     <div class="glow-ring"></div>
-    <button class="btn-main" id="addBtn"></button>
+    <button class="btn-main" id="addBtn" type="button" aria-label="揍一拳"></button>
   </div>
   <div class="btn-shadow"></div>
+
+  <label class="photo-picker" title="换一张照片" aria-label="换一张照片">
+    <input id="photoInput" type="file" accept="image/*">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  </label>
 
   <div class="realtime-info" id="realtimeInfo">· 全球网友也在参与 ·</div>
 
@@ -692,6 +1045,77 @@ canvas#particles {
   <div class="status" id="status">初始化中...</div>
 </div>
 
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h2>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      设 置
+    </h2>
+    <div class="settings-row">
+      <label for="nameInput">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        挨打对象
+      </label>
+      <input id="nameInput" type="text" placeholder="输入名字，默认「张永建」">
+    </div>
+    <div class="settings-row">
+      <label>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        挨打照片
+      </label>
+      <div class="settings-actions" style="margin-top:2px">
+        <button class="settings-btn-act settings-btn-close" id="restorePhotoBtn" style="flex:1">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          恢复默认
+        </button>
+      </div>
+    </div>
+    <div class="settings-divider"></div>
+    <div class="settings-actions">
+      <button class="settings-btn-act settings-btn-reset" id="resetBtn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        清空计数
+      </button>
+    </div>
+    <div class="settings-actions">
+      <button class="settings-btn-act settings-btn-cancel" id="cancelSettingsBtn">取消</button>
+      <button class="settings-btn-act settings-btn-close" id="closeSettingsBtn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        完成
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <p id="modalText">确定重置计数？</p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" id="modalCancel">取消</button>
+      <button class="modal-btn-confirm" id="modalConfirm">确定</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   const display = document.getElementById('countDisplay');
@@ -703,8 +1127,23 @@ canvas#particles {
   const placeholder = document.getElementById('placeholder');
   const realtimeInfo = document.getElementById('realtimeInfo');
   const todayCountEl = document.getElementById('todayCount');
+  const labelText = document.getElementById('labelText');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const nameInput = document.getElementById('nameInput');
+  const resetBtn = document.getElementById('resetBtn');
+  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+  const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+  const restorePhotoBtn = document.getElementById('restorePhotoBtn');
+  const targetPhoto = document.getElementById('targetPhoto');
+  const targetImg = document.getElementById('targetImg');
+  const photoInput = document.getElementById('photoInput');
   const canvas = document.getElementById('particles');
   const ctx = canvas.getContext('2d');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalText = document.getElementById('modalText');
+  const modalConfirm = document.getElementById('modalConfirm');
+  const modalCancel = document.getElementById('modalCancel');
 
   let count = 0;
   let todayClickCount = 0;
@@ -713,6 +1152,15 @@ canvas#particles {
   let textTimer = null;
   let clickCooldown = false;
   let idleTimer;
+  let targetDir = 'right';
+
+  const NAME_KEY = 'gun_custom_name';
+  let customName = (function() { try { return localStorage.getItem(NAME_KEY) || '张永建'; } catch(e) { return '张永建'; } })();
+
+  function resolveText(text) {
+    if (!text || customName === '张永建') return text;
+    return text.split('张永建').join(customName);
+  }
 
   const angry = [
     '吃我一拳张永建！',
@@ -898,12 +1346,116 @@ canvas#particles {
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+  const PHOTO_KEY = 'gun_counter_target_photo';
+  const targetDirs = ['right', 'left', 'up', 'down', 'center'];
+
+  function generateNamePhoto(name) {
+    const chars = name.split('');
+    const len = chars.length;
+    let fontSize, gap, col2 = false, mid = len;
+    if (len <= 2) { fontSize = 36; gap = 42; }
+    else if (len === 3) { fontSize = 28; gap = 34; }
+    else if (len === 4) { fontSize = 24; gap = 28; }
+    else { fontSize = 22; gap = 30; col2 = true; mid = Math.ceil(len / 2); }
+
+    const cols = col2 ? 2 : 1;
+    const rowsPerCol = col2 ? mid : len;
+    const totalH = (rowsPerCol - 1) * gap + fontSize;
+    const startY = Math.round((120 - totalH) / 2 + fontSize * .75);
+
+    const texts = chars.map((c, i) => {
+      const col = col2 && i >= mid ? 1 : 0;
+      const idx = col2 && i >= mid ? i - mid : i;
+      const cx = Math.round(120 / (cols + 1) * (col + 1));
+      const cy = startY + idx * gap;
+      return `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="${fontSize}" fill="#fff" font-weight="900" font-family="sans-serif">${c}</text>`;
+    }).join('');
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="#ffd166"/>
+          <stop offset="1" stop-color="#ef476f"/>
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" rx="24" fill="url(#bg)"/>
+      ${texts}
+    </svg>`;
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  }
+
+  function defaultTargetPhoto() {
+    return generateNamePhoto(customName);
+  }
+
+  function loadTargetPhoto() {
+    const saved = localStorage.getItem(PHOTO_KEY);
+    targetImg.src = saved || defaultTargetPhoto();
+  }
+
+  function placeTarget(nextDir) {
+    if (nextDir) targetDir = nextDir;
+
+    const wrap = document.querySelector('.btn-wrap').getBoundingClientRect();
+    const size = targetPhoto.getBoundingClientRect().width || 72;
+    const maxX = Math.max(58, wrap.width / 2 - size / 2 - 8);
+    const maxY = Math.max(54, wrap.height / 2 - size / 2 - 8);
+    const jitterX = (Math.random() - .5) * 14;
+    const jitterY = (Math.random() - .5) * 12;
+    const positions = {
+      right: [maxX, jitterY, 8],
+      left: [-maxX, jitterY, -8],
+      up: [jitterX, -maxY, -6],
+      down: [jitterX, maxY, 6],
+      center: [0, 0, 0],
+    };
+    const [tx, ty, rotate] = positions[targetDir] || positions.right;
+    const isCenter = targetDir === 'center';
+    const punchX = isCenter ? 0 : Math.round(tx * .5);
+    const punchY = isCenter ? 40 : Math.round(ty * .5);
+    const impactRotate = isCenter ? 0 : (tx < 0 || ty < 0 ? -12 : 12);
+
+    targetPhoto.style.setProperty('--tx', Math.round(tx) + 'px');
+    targetPhoto.style.setProperty('--ty', Math.round(ty) + 'px');
+    targetPhoto.style.setProperty('--target-rotate', rotate + 'deg');
+    targetPhoto.style.setProperty('--hit-x', isCenter ? '0px' : Math.round(tx * .16) + 'px');
+    targetPhoto.style.setProperty('--hit-y', isCenter ? '8px' : Math.round(ty * .16) + 'px');
+    targetPhoto.style.setProperty('--impact-rotate', impactRotate + 'deg');
+
+    addBtn.style.setProperty('--punch-x', punchX + 'px');
+    addBtn.style.setProperty('--punch-y', punchY + 'px');
+    addBtn.style.setProperty('--punch-rotate', (isCenter ? 0 : (tx < 0 || ty < 0 ? -10 : 10)) + 'deg');
+  }
+
+  function moveTargetAfterHit() {
+    const choices = targetDirs.filter(dir => dir !== targetDir);
+    placeTarget(pick(choices));
+  }
+
+  function hitTargetPhoto() {
+    targetPhoto.classList.remove('hit', 'hit-center');
+    void targetPhoto.offsetWidth;
+    targetPhoto.classList.add(targetDir === 'center' ? 'hit-center' : 'hit');
+    setTimeout(moveTargetAfterHit, 520);
+  }
+
+  function getViewportHeight() {
+    return Math.round((window.visualViewport && window.visualViewport.height) || window.innerHeight);
+  }
+
   function resize() {
+    const height = getViewportHeight();
+    document.documentElement.style.setProperty('--app-height', height + 'px');
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = height;
+    if (targetPhoto) placeTarget(targetDir);
   }
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', resize, { passive: true });
+  window.addEventListener('orientationchange', resize, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', resize, { passive: true });
+  }
 
   class Particle {
     constructor() { this.reset(); }
@@ -1056,6 +1608,9 @@ canvas#particles {
   }
 
   function init() {
+    loadTargetPhoto();
+    placeTarget(pick(targetDirs));
+
     const saved = loadData();
     count = saved.count;
     todayClickCount = saved.todayClicks || 0;
@@ -1071,6 +1626,8 @@ canvas#particles {
     }
 
     updateTodayCountDisplay();
+    updateNameLabel();
+    placeholder.textContent = resolveText('揍张永建一拳试试');
 
     const autoInc = applyDailyAutoIncrement();
     if (autoInc > 0) {
@@ -1093,6 +1650,57 @@ canvas#particles {
     todayCountEl.innerHTML = '今日已揍 <em>' + todayClickCount + '</em> 拳';
   }
 
+  function updateNameLabel() {
+    const len = customName.length;
+    const sp = len <= 2 ? 6 : len === 3 ? 4 : len === 4 ? 3 : 2;
+    labelText.style.letterSpacing = sp + 'px';
+    const chars = customName.split('');
+    labelText.innerHTML = '<span>揍</span><span> </span>' + chars.map(c => '<span>' + c + '</span>').join('<span> </span>') + '<span> </span><span>的</span><span> </span><span>次</span><span> </span><span>数</span>';
+  }
+
+  let modalCallback = null;
+
+  function showModal(text, callback) {
+    modalText.innerHTML = text.replace(/\n/g, '<br>');
+    modalCallback = callback;
+    modalOverlay.classList.add('open');
+  }
+
+  function hideModal() {
+    modalOverlay.classList.remove('open');
+    modalCallback = null;
+  }
+
+  modalConfirm.addEventListener('click', function() {
+    if (modalCallback) modalCallback();
+    hideModal();
+  });
+  modalCancel.addEventListener('click', hideModal);
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) hideModal();
+  });
+
+  function openSettings() {
+    nameInput.value = customName;
+    settingsOverlay.classList.add('open');
+  }
+
+  function applySettings() {
+    const val = nameInput.value.trim();
+    if (val && val !== customName) {
+      customName = val;
+      try { localStorage.setItem(NAME_KEY, customName); } catch(e) {}
+      updateNameLabel();
+      placeholder.textContent = resolveText('揍张永建一拳试试');
+      targetImg.src = generateNamePhoto(customName);
+    }
+    settingsOverlay.classList.remove('open');
+  }
+
+  function cancelSettings() {
+    settingsOverlay.classList.remove('open');
+  }
+
   // ---- 实时信息显示 ----
   function updateRealtimeInfo() {
     const r = Math.random();
@@ -1105,7 +1713,7 @@ canvas#particles {
 
   function showAutoNotify(inc) {
     resetTextState();
-    let note = '📡 已有 ' + inc + ' 位网友揍了张永建';
+    let note = resolveText('📡 已有 ' + inc + ' 位网友揍了张永建');
     let autoData;
     try { autoData = JSON.parse(localStorage.getItem(AUTO_KEY)); } catch (e) {}
     if (autoData && autoData.detail) {
@@ -1147,7 +1755,7 @@ canvas#particles {
     const a = pick(angry);
     const c = pick(calm);
 
-    line1.textContent = a;
+    line1.textContent = resolveText(a);
     line1.className = 'phrase-line angry angry-in';
 
     setTimeout(() => {
@@ -1159,7 +1767,7 @@ canvas#particles {
         line1.className = 'phrase-line';
         divider.className = 'divider-line';
 
-        line2.textContent = c;
+        line2.textContent = resolveText(c);
         line2.className = 'phrase-line calm calm-in';
         divider.className = 'divider-line in';
 
@@ -1201,15 +1809,20 @@ canvas#particles {
     saveData();
     updateTodayCountDisplay();
 
-    // 随机出拳方向
-    const dirs = ['right', 'left', 'up', 'down'];
-    const dir = dirs[Math.floor(Math.random() * dirs.length)];
-    addBtn.classList.remove('punch-right', 'punch-left', 'punch-up', 'punch-down');
+    const dir = targetDir;
+    placeTarget(dir);
+    addBtn.classList.remove('punch-right', 'punch-left', 'punch-up', 'punch-down', 'punch-center');
     void addBtn.offsetLeft;
     addBtn.classList.add('punch-' + dir);
+    hitTargetPhoto();
 
-    // 张永建的脸出现
-    spawnFaceHit(dir);
+    if (dir === 'center') {
+      document.body.classList.remove('screen-shake');
+      void document.body.offsetWidth;
+      document.body.classList.add('screen-shake');
+    }
+
+    setTimeout(() => spawnFaceHit(dir), 80);
     spawnPunchText(dir);
 
     updateUI(true);
@@ -1219,7 +1832,7 @@ canvas#particles {
     const rect = addBtn.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    const offsets = { right: [60, 0], left: [-60, 0], up: [0, -60], down: [0, 60] };
+    const offsets = { right: [60, 0], left: [-60, 0], up: [0, -60], down: [0, 60], center: [0, 20] };
     const [ox, oy] = offsets[dir] || [0, 0];
 
     const faces = ['😫', '😵', '🥴', '😵‍💫', '🤕', '😩', '😭', '😰', '🥺', '😖', '😣', '😧', '😨', '🤯', '😤', '💀'];
@@ -1228,8 +1841,8 @@ canvas#particles {
     face.textContent = faces[Math.floor(Math.random() * faces.length)];
     face.style.left = (cx - 40 + ox) + 'px';
     face.style.top = (cy - 40 + oy) + 'px';
-    face.style.fontSize = (70 + Math.random() * 40) + 'px';
-    const dirMap = { right: [120, 0], left: [-120, 0], up: [0, -120], down: [0, 120] };
+    face.style.fontSize = (dir === 'center' ? 110 + Math.random() * 30 : 70 + Math.random() * 40) + 'px';
+    const dirMap = { right: [120, 0], left: [-120, 0], up: [0, -120], down: [0, 120], center: [0, 80] };
     const [fx, fy] = dirMap[dir] || [120, 0];
     face.style.setProperty('--fx', fx + 'px');
     face.style.setProperty('--fy', fy + 'px');
@@ -1267,24 +1880,26 @@ canvas#particles {
     }
 
     const stars = ['💫', '✨', '⭐', '🌟', '💥', '✨', '⭐', '💢', '💨', '💫'];
-    for (let i = 0; i < 5 + Math.floor(Math.random() * 4); i++) {
+    const starCount = dir === 'center' ? 10 + Math.floor(Math.random() * 6) : 5 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < starCount; i++) {
       setTimeout(() => {
         const star = document.createElement('div');
         star.className = 'hit-star';
         star.textContent = stars[Math.floor(Math.random() * stars.length)];
-        const angle = (i / 6) * Math.PI * 2 + (Math.random() - .5) * .8;
-        const dist1 = 30 + Math.random() * 70;
-        const dist2 = dist1 + 20 + Math.random() * 60;
+        const angle = (i / (dir === 'center' ? 8 : 6)) * Math.PI * 2 + (Math.random() - .5) * .8;
+        const mult = dir === 'center' ? 1.6 : 1;
+        const dist1 = (30 + Math.random() * 70) * mult;
+        const dist2 = (dist1 + 20 + Math.random() * 60) * mult;
         star.style.left = (cx + Math.cos(angle) * 15 + ox) + 'px';
         star.style.top = (cy + Math.sin(angle) * 15 - 20 + oy) + 'px';
         star.style.setProperty('--dx', Math.cos(angle) * dist1 + 'px');
         star.style.setProperty('--dy', Math.sin(angle) * dist1 + 'px');
         star.style.setProperty('--dx2', Math.cos(angle) * dist2 + 'px');
         star.style.setProperty('--dy2', Math.sin(angle) * dist2 + 'px');
-        star.style.fontSize = (16 + Math.random() * 18) + 'px';
+        star.style.fontSize = (dir === 'center' ? 22 + Math.random() * 24 : 16 + Math.random() * 18) + 'px';
         document.body.appendChild(star);
         setTimeout(() => star.remove(), 1300);
-      }, i * 80);
+      }, i * (dir === 'center' ? 60 : 80));
     }
   }
 
@@ -1373,7 +1988,7 @@ canvas#particles {
       ];
       const el = document.createElement('div');
       el.className = 'punch-word';
-      el.textContent = pool[Math.floor(Math.random() * pool.length)];
+      el.textContent = resolveText(pool[Math.floor(Math.random() * pool.length)]);
       el.style.left = (2 + Math.random() * 72) + 'vw';
       el.style.top = (8 + Math.random() * 65) + 'vh';
       el.style.setProperty('--wx', (-50 + Math.random() * 100) + 'px');
@@ -1399,7 +2014,7 @@ canvas#particles {
     let idx = 0;
     setInterval(() => {
       if (topBar) {
-        topBar.textContent = calm[idx % calm.length];
+        topBar.textContent = resolveText(calm[idx % calm.length]);
         idx++;
       }
     }, 3000);
@@ -1407,7 +2022,7 @@ canvas#particles {
     let ridx = 0;
     setInterval(() => {
       const phrase = calm[ridx % calm.length];
-      realtimeInfo.textContent = '✨ ' + phrase;
+      realtimeInfo.textContent = '✨ ' + resolveText(phrase);
       ridx++;
       setTimeout(() => {
         const r = Math.random();
@@ -1424,18 +2039,62 @@ canvas#particles {
 
   display.addEventListener('dblclick', function() {
     if (count === 0) return;
-    if (confirm('确定重置计数？')) {
+    showModal('确定重置计数？', function() {
       count = 0;
       saveData();
       updateUI(false);
-    }
+    });
   });
 
   addBtn.addEventListener('click', addCount);
 
+  settingsBtn.addEventListener('click', openSettings);
+  closeSettingsBtn.addEventListener('click', applySettings);
+  cancelSettingsBtn.addEventListener('click', cancelSettings);
+  resetBtn.addEventListener('click', function() {
+    showModal('确定重置计数？\n今日拳数也会清空', function() {
+      count = 0;
+      todayClickCount = 0;
+      saveData();
+      updateUI(false);
+      updateTodayCountDisplay();
+    });
+  });
+  settingsOverlay.addEventListener('click', function(e) {
+    if (e.target === settingsOverlay) cancelSettings();
+  });
+  nameInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); applySettings(); }
+  });
+
+  restorePhotoBtn.addEventListener('click', function() {
+    try { localStorage.removeItem(PHOTO_KEY); } catch(e) {}
+    targetImg.src = generateNamePhoto(customName);
+  });
+
+  photoInput.addEventListener('change', function() {
+    const file = photoInput.files && photoInput.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = function() {
+      const src = String(reader.result || '');
+      if (!src) return;
+      targetImg.src = src;
+      try {
+        localStorage.setItem(PHOTO_KEY, src);
+      } catch (e) { /* ignore */ }
+      placeTarget(pick(targetDirs));
+      hitTargetPhoto();
+    };
+    reader.readAsDataURL(file);
+  });
+
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); addCount(); }
+    if ((e.code === 'Space' || e.key === ' ') && !settingsOverlay.classList.contains('open')) { e.preventDefault(); addCount(); }
+    if (e.key === 'Escape' && settingsOverlay.classList.contains('open')) closeSettings();
   });
 
   init();
